@@ -39,18 +39,17 @@ function displayMedia(items, containerSelector, defaultType) {
     const card = document.createElement('div');
     card.classList.add('swiper-slide', 'poster-wrapper');
     card.innerHTML = `
-      <img src="${poster}" alt="${title}" />
+      <img src="${poster}" alt="${title}" style="cursor:pointer;" data-id="${id}" data-title="${title}" data-type="${mediaType}" />
       <div class="poster-label">${title}</div>
-      <button class="watch-btn" data-id="${id}" data-title="${title}" data-type="${mediaType}">▶ Watch</button>
     `;
     container.appendChild(card);
   });
 
-  document.querySelectorAll('.watch-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-id');
-      const title = btn.getAttribute('data-title');
-      const type = btn.getAttribute('data-type');
+  document.querySelectorAll('.poster-wrapper img').forEach(img => {
+    img.addEventListener('click', () => {
+      const id = img.getAttribute('data-id');
+      const title = img.getAttribute('data-title');
+      const type = img.getAttribute('data-type');
       openPlayer(id, title, type);
     });
   });
@@ -63,7 +62,7 @@ function openPlayer(itemId, title, mediaType) {
   modal.innerHTML = `
     <div class="modal-content">
       <span class="close-btn">×</span>
-      <label style="color: white;">Change Server:</label>
+      <label style="color:white;">Change Server:</label>
       <select id="server-select"></select>
       <div class="iframe-shield"></div>
       <iframe id="player-frame" width="100%" height="500" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
@@ -107,16 +106,18 @@ function openPlayer(itemId, title, mediaType) {
   };
 }
 
-// SEARCH HANDLER
-document.getElementById('search-button').addEventListener('click', () => {
-  const q = document.getElementById('search-input').value.trim();
-  if (q.length > 1) {
-    window.location.href = `search.html?q=${encodeURIComponent(q)}`;
-  }
-});
+// SEARCH REDIRECT
+if (document.getElementById('search-button')) {
+  document.getElementById('search-button').addEventListener('click', () => {
+    const q = document.getElementById('search-input').value.trim();
+    if (q.length > 1) {
+      window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+    }
+  });
+}
 
 // INIT
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () => {
   fetchAndDisplay('/trending/all/day', '.movie-list', 'movie');
   fetchAndDisplay('/movie/popular', '.popular-list', 'movie');
   fetchAndDisplay('/tv/popular', '.tv-list', 'tv');
@@ -151,3 +152,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+  
