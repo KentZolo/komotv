@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KomoTV - Home</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 </head>
@@ -40,20 +41,18 @@
   </section>
 
   <footer class="footer">
-    <p>&copy; 2025 Cinebox - For educational use only</p>
+    <p>&copy; 2025 KomoTV - For educational use only</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
   <script src="main.js"></script>
   <script>
-  document.getElementById('search-button').addEventListener('click', () => {
-    const q = document.getElementById('search-input').value.trim();
-    if (q.length > 1) {
-      window.location.href = `search.html?q=${encodeURIComponent(q)}`;
-    }
-  });
-</script>
-</body>
-  
+    document.getElementById('search-button').addEventListener('click', () => {
+      const q = document.getElementById('search-input').value.trim();
+      if (q.length > 1) {
+        window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+      }
+    });
+  </script>
 </body>
 </html>
