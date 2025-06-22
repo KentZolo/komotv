@@ -1,74 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KomoTV - Search</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <header class="navbar">
-    <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search movies or shows..." />
-      <button id="search-button">🔍</button>
-    </div>
-  </header>
+<script>
+const API_KEY = '77312bdd4669c80af3d08e0bf719d7ff';
+const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
 
-  <section class="hero">
-    <img src="banner.jpg" alt="Banner" class="banner" />
-  </section>
+const SERVERS = [
+  {
+    name: 'Apimocine (No Ads)',
+    id: 'apimocine',
+    url: (type, id) => `https://apimocine.vercel.app/${type}/${id}?autoplay=true`
+  },
+  {
+    name: 'Vidsrc.to',
+    id: 'vidsrc',
+    url: (type, id) => `https://vidsrc.to/embed/${type}/${id}`
+  },
+  {
+    name: 'Vidsrc.cc',
+    id: 'vidsrccc',
+    url: (type, id) => `https://vidsrc.cc/v2/embed/${type}/${id}`
+  }
+];
 
-  <h2 id="search-title">🔍 Search Results</h2>
-  <div class="movie-list" id="results"></div>
+async function searchMovies(query) {
+  const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+  const data = await res.json();
+  const results = data.results;
 
-  <footer class="footer">
-    <p>&copy; 2025 KomoTV - For educational use only</p>
-  </footer>
+  const container = document.getElementById('results');
+  container.innerHTML = '';
 
-  <script>
-    const API_KEY = '77312bdd4669c80af3d08e0bf719d7ff';
-    const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
+  if (!results || results.length === 0) {
+    container.innerHTML = '<p style="text-align:center;">No results found.</p>';
+    return;
+  }
 
-    async function searchMovies(query) {
-      const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
-      const data = await res.json();
-      const results = data.results;
+  results.forEach(item => {
+    if (item.media_type === 'person') return;
+    const id = item.id;
+    const type = item.media_type;
+    const title = item.title || item.name;
+    const poster = item.poster_path ? IMG_BASE + item.poster_path : '';
 
-      const container = document.getElementById('results');
-      container.innerHTML = '';
-
-      if (!results || results.length === 0) {
-        container.innerHTML = '<p style="text-align:center;">No results found.</p>';
-        return;
-      }
-
-      results.forEach(item => {
-        if (item.media_type === 'person') return;
-        const title = item.title || item.name;
-        const poster = item.poster_path ? IMG_BASE + item.poster_path : '';
-        const div = document.createElement('div');
-        div.className = 'poster-wrapper';
-        div.innerHTML = `
-          <img src="${poster}" alt="${title}" />
-          <div class="poster-label">${title}</div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      const q = new URLSearchParams(window.location.search).get('q') || '';
-      document.getElementById('search-input').value = q;
-      document.getElementById('search-title').textContent = `🔍 Results for "${q}"`;
-      if (q) searchMovies(q);
-    });
-
-    document.getElementById('search-button').addEventListener('click', () => {
-      const q = document.getElementById('search-input').value.trim();
-      if (q.length > 1) {
-        window.location.href = `search.html?q=${encodeURIComponent(q)}`;
-      }
-    });
-  </script>
-</body>
-</html>
+    const div = document.createElement('div');
+    div.className = 'poster-wrapper';
+    div.innerHTML = `
+      <img src="${poster}" alt="${title}" style="cursor:pointer;" data-id="${id}" data-type="${type}" data-title="${title}" />
+      <div class="poster-label">${title}</div>
+    `;
+    container.append
+    
