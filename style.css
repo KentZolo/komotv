@@ -1,4 +1,4 @@
-/* Reset */
+/* Basic reset */
 * {
   margin: 0;
   padding: 0;
@@ -6,10 +6,9 @@
 }
 
 body {
+  font-family: Arial, sans-serif;
   background: #0f0f0f;
   color: white;
-  font-family: Arial, sans-serif;
-  min-height: 100vh;
 }
 
 /* Navbar */
@@ -17,8 +16,14 @@ body {
   background: #1a1a1a;
   padding: 1rem;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff2c57;
 }
 
 .search-bar {
@@ -42,8 +47,10 @@ body {
   color: white;
 }
 
-/* Banner */
+/* Hero Section */
 .hero {
+  position: relative;
+  text-align: left;
   margin-bottom: 2rem;
 }
 
@@ -54,27 +61,47 @@ body {
   filter: brightness(0.5);
 }
 
-/* Section Titles */
-h2 {
-  margin: 1rem 0;
-  padding-left: 1rem;
-  font-size: 1.2rem;
+.hero-info {
+  position: absolute;
+  top: 30%;
+  left: 5%;
+}
+
+.hero-info h1 {
+  font-size: 2rem;
+  color: white;
+}
+
+.hero-info p {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.hero-info .play-btn {
+  background: #ff2c57;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  color: white;
+  margin-top: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* Sections */
+section {
+  padding: 1rem;
+}
+
+section h2 {
+  margin-bottom: 1rem;
   color: #ff2c57;
 }
 
-/* Movie Grid */
-.movie-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 0 1rem 2rem;
-  justify-content: center;
-}
-
+/* Movie Cards */
 .poster-wrapper {
-  width: 140px;
+  position: relative;
   text-align: center;
-  cursor: pointer;
+  margin: 0.5rem;
 }
 
 .poster-wrapper img {
@@ -87,13 +114,23 @@ h2 {
   font-size: 0.9rem;
 }
 
-/* Modal Player */
+.watch-btn {
+  margin-top: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  background: #ff2c57;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Modal */
 .modal {
   position: fixed;
   top: 0; left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0,0,0,0.9);
   display: flex;
   justify-content: center;
   align-items: center;
