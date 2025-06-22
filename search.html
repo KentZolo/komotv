@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KomoTV - Search</title>
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 </head>
 <body>
   <header class="navbar">
@@ -13,80 +13,62 @@
       <button id="search-button">🔍</button>
     </div>
   </header>
-   
-  <h2 id="search-title">🔍 Search Results</h2>
-  <div class="movie-list" id="results"></div>
+
   <section class="hero">
     <img src="banner.jpg" alt="Banner" class="banner" />
-    
   </section>
 
-  <section class="trending">
-    <h2>🔥 Trending Now</h2>
-    <div class="swiper trending-swiper">
-      <div class="swiper-wrapper movie-list"></div>
-    </div>
-  </section>
-
-  <section class="popular">
-    <h2>🎬 Popular Movies</h2>
-    <div class="swiper movie-swiper">
-      <div class="swiper-wrapper popular-list"></div>
-    </div>
-  </section>
-
-  <section class="tv">
-    <h2>📺 Popular TV Shows</h2>
-    <div class="swiper tv-swiper">
-      <div class="swiper-wrapper tv-list"></div>
-    </div>
-  </section>
+  <h2 id="search-title">🔍 Search Results</h2>
+  <div class="movie-list" id="results"></div>
 
   <footer class="footer">
-    <p>&copy; 2025 Cinebox - For educational use only</p>
+    <p>&copy; 2025 KomoTV - For educational use only</p>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-  <script src="main.js"></script>
   <script>
-  const API_KEY = '77312bdd4669c80af3d08e0bf719d7ff';
-  const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
+    const API_KEY = '77312bdd4669c80af3d08e0bf719d7ff';
+    const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
 
-  async function searchMovies(query) {
-    const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
-    const data = await res.json();
-    const results = data.results;
+    async function searchMovies(query) {
+      const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      const results = data.results;
 
-    const container = document.getElementById('results');
-    container.innerHTML = '';
+      const container = document.getElementById('results');
+      container.innerHTML = '';
 
-    results.forEach(item => {
-      if (item.media_type === 'person') return;
-      const title = item.title || item.name;
-      const poster = item.poster_path ? IMG_BASE + item.poster_path : '';
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <img src="${poster}" style="width:150px; border-radius:10px;"><br>
-        <span style="color:white;">${title}</span>
-      `;
-      container.appendChild(div);
-    });
-  }
+      if (!results || results.length === 0) {
+        container.innerHTML = '<p style="text-align:center;">No results found.</p>';
+        return;
+      }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const q = new URLSearchParams(window.location.search).get('q') || '';
-    document.getElementById('search-input').value = q;
-    document.getElementById('search-title').textContent = `🔍 Results for "${q}"`;
-    if (q) searchMovies(q);
-  });
-
-  document.getElementById('search-button').addEventListener('click', () => {
-    const q = document.getElementById('search-input').value.trim();
-    if (q.length > 1) {
-      window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+      results.forEach(item => {
+        if (item.media_type === 'person') return;
+        const title = item.title || item.name;
+        const poster = item.poster_path ? IMG_BASE + item.poster_path : '';
+        const div = document.createElement('div');
+        div.className = 'poster-wrapper';
+        div.innerHTML = `
+          <img src="${poster}" alt="${title}" />
+          <div class="poster-label">${title}</div>
+        `;
+        container.appendChild(div);
+      });
     }
-  });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const q = new URLSearchParams(window.location.search).get('q') || '';
+      document.getElementById('search-input').value = q;
+      document.getElementById('search-title').textContent = `🔍 Results for "${q}"`;
+      if (q) searchMovies(q);
+    });
+
+    document.getElementById('search-button').addEventListener('click', () => {
+      const q = document.getElementById('search-input').value.trim();
+      if (q.length > 1) {
+        window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+      }
+    });
   </script>
-  
 </body>
 </html>
