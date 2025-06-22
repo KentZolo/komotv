@@ -45,5 +45,15 @@
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
   <script src="main.js"></script>
+  <script>
+  document.getElementById('search-button').addEventListener('click', () => {
+    const q = document.getElementById('search-input').value.trim();
+    if (q.length > 1) {
+      window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+    }
+  });
+</script>
+</body>
+  
 </body>
 </html>
