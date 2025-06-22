@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cinebox - Home</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">🎬 Cinebox</div>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search movies or shows..." />
+      <button id="search-button">🔍</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <img src="banner.jpg" alt="Banner" class="banner" />
+    <div class="hero-info">
+      <h1>Featured Title</h1>
+      <p>"Some tagline goes here."</p>
+      <button class="play-btn">▶ Watch</button>
+    </div>
+  </section>
+
+  <section class="trending">
+    <h2>🔥 Trending Now</h2>
+    <div class="swiper trending-swiper">
+      <div class="swiper-wrapper movie-list"></div>
+    </div>
+  </section>
+
+  <section class="popular">
+    <h2>🎬 Popular Movies</h2>
+    <div class="swiper movie-swiper">
+      <div class="swiper-wrapper popular-list"></div>
+    </div>
+  </section>
+
+  <section class="tv">
+    <h2>📺 Popular TV Shows</h2>
+    <div class="swiper tv-swiper">
+      <div class="swiper-wrapper tv-list"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2025 Cinebox - For educational use only</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
