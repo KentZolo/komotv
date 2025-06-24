@@ -3,53 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Search</title>
+  <title>KomoTV - Search</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    .search-title {
-      padding: 20px;
-      text-align: center;
-    }
-
-    .no-results {
-      text-align: center;
-      padding: 40px;
-      color: #aaa;
-    }
-
-    .watch-btn {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #e50914;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 4px;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .poster-wrapper:hover .watch-btn {
-      opacity: 1;
-    }
-  </style>
 </head>
 <body>
   <header class="navbar">
-    <div class="logo">🎬 Cinebox</div>
     <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search movies or shows..." value="">
+      <input type="text" id="search-input" placeholder="Search movies or shows..." />
       <button id="search-button">🔍</button>
     </div>
   </header>
 
-  <section class="trending">
-    <h2 id="search-title" class="search-title">🔍 Search Results</h2>
+  <section class="search-results">
+    <h2 class="search-title" id="search-title">🔍 Search Results</h2>
     <div class="search-results-grid" id="results-grid"></div>
-
   </section>
 
   <script>
@@ -58,23 +25,24 @@
     const FALLBACK_IMAGE = 'https://via.placeholder.com/500x750?text=No+Poster';
 
     const SERVERS = [
-      { name: 'Apimocine (No Ads)', id: 'apimocine', url: (type, id) => `https://apimocine.vercel.app/${type}/${id}?autoplay=true` },
-      { name: 'Vidsrc.to', id: 'vidsrc', url: (type, id) => `https://vidsrc.to/embed/${type}/${id}` },
-      { name: 'Vidsrc.cc', id: 'vidsrccc', url: (type, id) => `https://vidsrc.cc/v2/embed/${type}/${id}` }
+      { id: 'apimocine', name: 'Apimocine', url: (t, id) => `https://apimocine.vercel.app/${t}/${id}?autoplay=true` },
+      { id: 'vidsrc', name: 'Vidsrc.to', url: (t, id) => `https://vidsrc.to/embed/${t}/${id}` },
+      { id: 'vidsrccc', name: 'Vidsrc.cc', url: (t, id) => `https://vidsrc.cc/v2/embed/${t}/${id}` }
     ];
 
     function getQuery() {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('q') || '';
+      const params = new URLSearchParams(window.location.search);
+      return params.get('q') || '';
+    }
+
+    function getImageUrl(path) {
+      return path ? IMG_BASE + path : FALLBACK_IMAGE;
     }
 
     async function searchMovies(query) {
       const container = document.getElementById('results-grid');
-      container.innerHTML = '<p class="no-results">Searching...</p>';
-      
-
       if (!query || query.length < 2) {
-        container.innerHTML = '<p class="no-results">Please enter a valid search term (min 2 characters)</p>';
+        container.innerHTML = '<p class="no-results">Please enter at least 2 characters.</p>';
         return;
       }
 
@@ -85,22 +53,13 @@
         const data = await res.json();
         displayResults(data.results, query);
       } catch (err) {
-        console.error('Search error:', err);
-        container.innerHTML = '<p class="no-results">Failed to load results. Please try again.</p>';
+        console.error('Search failed:', err);
+        container.innerHTML = '<p class="no-results">Failed to load results. Please try again later.</p>';
       }
     }
 
     function displayResults(results, query) {
       const container = document.getElementById('results-grid');
-      container.innerHTML = filtered.map(item => {
-    // generate result cards
-    }).join('');
-      
-
-      if (!results || results.length === 0) {
-        container.innerHTML = `<p class="no-results">No results found for "${query}"</p>`;
-        return;
-      }
 
       const filtered = results.filter(item =>
         item.media_type !== 'person' &&
@@ -108,29 +67,25 @@
       );
 
       if (filtered.length === 0) {
-        container.innerHTML = `<p class="no-results">No visual results found for "${query}"</p>`;
+        container.innerHTML = `<p class="no-results">No results found for "${query}"</p>`;
         return;
       }
 
       container.innerHTML = filtered.map(item => {
-        const id = item.id;
         const title = item.title || item.name;
+        const poster = getImageUrl(item.poster_path || item.backdrop_path);
         const type = item.media_type;
         const year = item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4) || '';
-        const posterPath = item.poster_path || item.backdrop_path;
-        const poster = posterPath ? IMG_BASE + posterPath : FALLBACK_IMAGE;
 
         return `
           <div class="poster-wrapper">
-            <img src="${poster}" alt="${title}" onerror="this.src='${FALLBACK_IMAGE}'">
+            <img src="${poster}" alt="${title}" />
             <div class="poster-label">${title}</div>
             <div class="poster-meta">${type === 'movie' ? '🎬' : '📺'} ${year}</div>
             <button class="watch-btn"
-                    data-id="${id}"
-                    data-title="${title}"
-                    data-type="${type}">
-              ▶ Watch
-            </button>
+              data-id="${item.id}"
+              data-type="${type}"
+              data-title="${title}">▶ Watch</button>
           </div>
         `;
       }).join('');
@@ -161,7 +116,7 @@
           <h3>${title}</h3>
           <label>Server:</label>
           <select id="server-select"></select>
-          <div class="iframe-shield">Loading player...</div>
+          <div class="iframe-shield">Loading...</div>
           <iframe id="player-frame" allowfullscreen></iframe>
         </div>
       `;
@@ -175,8 +130,6 @@
         option.textContent = server.name;
         select.appendChild(option);
       });
-
-      loadServer(0);
 
       function loadServer(index) {
         const server = SERVERS[index];
@@ -192,10 +145,12 @@
           if (index + 1 < SERVERS.length) {
             loadServer(index + 1);
           } else {
-            shield.textContent = 'No working server found. Please try again later.';
+            shield.textContent = 'No working server found.';
           }
         };
       }
+
+      loadServer(0);
 
       select.addEventListener('change', () => {
         const selected = SERVERS.find(s => s.id === select.value);
