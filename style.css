@@ -171,27 +171,72 @@ section h2 {
   font-size: 0.9rem;
   color: #999;
 }
-/* ===== BANNER SLIDER STYLES ===== */
+/* ===== GLOBAL STYLES ===== */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #0f0f0f;
+  color: #ffffff;
+}
+
+/* ===== NAVBAR STYLES ===== */
+.navbar {
+  padding: 15px 20px;
+  background-color: #1a1a1a;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.search-bar {
+  display: flex;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+#search-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: none;
+  border-radius: 25px 0 0 25px;
+  background-color: #2a2a2a;
+  color: white;
+  font-size: 16px;
+}
+
+#search-button {
+  padding: 0 20px;
+  border: none;
+  border-radius: 0 25px 25px 0;
+  background-color: #e50914;
+  color: white;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+/* ===== BANNER SLIDER STYLES (3:4 Aspect Ratio) ===== */
+.featured {
+  padding: 20px;
+}
+
 .banner-slider {
   width: 100%;
   position: relative;
-  margin: 20px 0 40px;
-  padding: 0 20px;
+  margin: 0 auto 40px;
 }
 
 .poster-box {
   position: relative;
-  max-width: 800px; /* Reduced from 1200px for better portrait proportions */
+  max-width: 400px; /* Perfect for 3:4 ratio */
   margin: 0 auto;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  aspect-ratio: 3/4; /* This enforces the 3:4 ratio */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+  aspect-ratio: 3/4;
 }
 
 .poster-image {
   width: 100%;
-  height: 100%; /* Changed from auto to 100% */
+  height: 100%;
   object-fit: cover;
   display: block;
   transition: opacity 0.5s ease;
@@ -203,41 +248,40 @@ section h2 {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20px; /* Reduced padding for vertical space */
+  padding: 20px;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
   color: white;
 }
 
-/* Rest of your CSS remains the same */
 .meta-text {
   margin: 0;
-  font-size: 16px;
+  font-size: 14px;
   display: flex;
-  gap: 15px;
+  gap: 12px;
   align-items: center;
   flex-wrap: wrap;
   color: rgba(255, 255, 255, 0.9);
 }
 
 .title-text {
-  margin: 8px 0 0; /* Reduced margin */
-  font-size: 2rem; /* Slightly smaller for vertical space */
+  margin: 8px 0 0;
+  font-size: 1.8rem;
   font-weight: 700;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Navigation Buttons - Adjusted for vertical layout */
+/* Navigation Buttons */
 .nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px; /* Slightly smaller */
+  width: 40px;
   height: 40px;
   border: none;
   border-radius: 50%;
   background-color: rgba(0, 0, 0, 0.7);
   color: white;
-  font-size: 20px; /* Slightly smaller */
+  font-size: 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -246,10 +290,57 @@ section h2 {
   transition: all 0.3s ease;
 }
 
-/* Responsive Adjustments */
+.nav:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #000;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.prev {
+  left: 15px;
+}
+
+.next {
+  right: 15px;
+}
+
+/* ===== SWIPER SECTION STYLES ===== */
+section {
+  padding: 0 20px 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.swiper {
+  padding: 10px 5px 25px;
+}
+
+.swiper-slide {
+  width: auto;
+}
+
+/* ===== FOOTER STYLES ===== */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #1a1a1a;
+  margin-top: 30px;
+  font-size: 14px;
+  color: #777;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 768px) {
   .poster-box {
-    max-width: 600px;
+    max-width: 350px;
   }
   
   .title-text {
@@ -257,18 +348,24 @@ section h2 {
   }
   
   .meta-text {
-    font-size: 14px;
+    font-size: 13px;
     gap: 10px;
+  }
+  
+  .nav {
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
   }
 }
 
 @media (max-width: 480px) {
   .poster-box {
-    max-width: 100%;
+    max-width: 300px;
   }
   
   .title-text {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
   
   .meta-text {
@@ -280,5 +377,9 @@ section h2 {
     width: 30px;
     height: 30px;
     font-size: 16px;
+  }
+  
+  section h2 {
+    font-size: 1.3rem;
   }
 }
