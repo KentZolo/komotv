@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cinebox - Search</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
   <style>
-    /* Additional styles specific to search page */
     .search-title {
       padding: 20px;
       text-align: center;
     }
-    
+
     .no-results {
       text-align: center;
       padding: 40px;
       color: #aaa;
     }
-    
+
     .watch-btn {
       position: absolute;
       bottom: 10px;
@@ -32,7 +31,7 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-    
+
     .poster-wrapper:hover .watch-btn {
       opacity: 1;
     }
@@ -58,92 +57,70 @@
     const FALLBACK_IMAGE = 'https://via.placeholder.com/500x750?text=No+Poster';
 
     const SERVERS = [
-      {
-        name: 'Apimocine (No Ads)',
-        id: 'apimocine',
-        url: (type, id) => `https://apimocine.vercel.app/${type}/${id}?autoplay=true`
-      },
-      {
-        name: 'Vidsrc.to',
-        id: 'vidsrc',
-        url: (type, id) => `https://vidsrc.to/embed/${type}/${id}`
-      },
-      {
-        name: 'Vidsrc.cc',
-        id: 'vidsrccc',
-        url: (type, id) => `https://vidsrc.cc/v2/embed/${type}/${id}`
-      }
+      { name: 'Apimocine (No Ads)', id: 'apimocine', url: (type, id) => `https://apimocine.vercel.app/${type}/${id}?autoplay=true` },
+      { name: 'Vidsrc.to', id: 'vidsrc', url: (type, id) => `https://vidsrc.to/embed/${type}/${id}` },
+      { name: 'Vidsrc.cc', id: 'vidsrccc', url: (type, id) => `https://vidsrc.cc/v2/embed/${type}/${id}` }
     ];
 
-    // Get search query from URL
     function getQuery() {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get('q') || '';
     }
 
-    // Main search function
     async function searchMovies(query) {
       const container = document.getElementById('results');
-      
-      try {
-        if (!query || query.length < 2) {
-          container.innerHTML = '<p class="no-results">Please enter a valid search term (min 2 characters)</p>';
-          return;
-        }
 
-        container.innerHTML = '<p class="no-results">Searching...</p>';
-        
-        const res = await fetch(
-          `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
-        );
-        
-        if (!res.ok) throw new Error('Search failed');
-        
+      if (!query || query.length < 2) {
+        container.innerHTML = '<p class="no-results">Please enter a valid search term (min 2 characters)</p>';
+        return;
+      }
+
+      container.innerHTML = '<p class="no-results">Searching...</p>';
+
+      try {
+        const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
         const data = await res.json();
         displayResults(data.results, query);
-        
-      } catch (error) {
-        console.error('Search error:', error);
+      } catch (err) {
+        console.error('Search error:', err);
         container.innerHTML = '<p class="no-results">Failed to load results. Please try again.</p>';
       }
     }
 
-    // Display search results
     function displayResults(results, query) {
       const container = document.getElementById('results');
-      
+
       if (!results || results.length === 0) {
         container.innerHTML = `<p class="no-results">No results found for "${query}"</p>`;
         return;
       }
 
-      // Filter out people and items without images
-      const filteredResults = results.filter(item => 
-        item.media_type !== 'person' && 
+      const filtered = results.filter(item =>
+        item.media_type !== 'person' &&
         (item.poster_path || item.backdrop_path)
       );
 
-      if (filteredResults.length === 0) {
+      if (filtered.length === 0) {
         container.innerHTML = `<p class="no-results">No visual results found for "${query}"</p>`;
         return;
       }
 
-      container.innerHTML = filteredResults.map(item => {
+      container.innerHTML = filtered.map(item => {
         const id = item.id;
         const title = item.title || item.name;
         const type = item.media_type;
-        const year = item.release_date?.slice(0,4) || item.first_air_date?.slice(0,4) || '';
-        const poster = item.poster_path ? IMG_BASE + item.poster_path : FALLBACK_IMAGE;
-        
+        const year = item.release_date?.slice(0, 4) || item.first_air_date?.slice(0, 4) || '';
+        const posterPath = item.poster_path || item.backdrop_path;
+        const poster = posterPath ? IMG_BASE + posterPath : FALLBACK_IMAGE;
+
         return `
           <div class="poster-wrapper">
-            <img src="${poster}" alt="${title}" 
-                 onerror="this.src='${FALLBACK_IMAGE}'">
+            <img src="${poster}" alt="${title}" onerror="this.src='${FALLBACK_IMAGE}'">
             <div class="poster-label">${title}</div>
             <div class="poster-meta">${type === 'movie' ? '🎬' : '📺'} ${year}</div>
-            <button class="watch-btn" 
-                    data-id="${id}" 
-                    data-title="${title}" 
+            <button class="watch-btn"
+                    data-id="${id}"
+                    data-title="${title}"
                     data-type="${type}">
               ▶ Watch
             </button>
@@ -151,38 +128,24 @@
         `;
       }).join('');
 
-      // Add click events to all watch buttons
       document.querySelectorAll('.watch-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
-          openPlayer(
-            btn.dataset.id,
-            btn.dataset.title,
-            btn.dataset.type
-          );
+          openPlayer(btn.dataset.id, btn.dataset.title, btn.dataset.type);
         });
       });
 
-      // Make entire poster clickable
       document.querySelectorAll('.poster-wrapper').forEach(poster => {
         poster.addEventListener('click', () => {
           const btn = poster.querySelector('.watch-btn');
-          openPlayer(
-            btn.dataset.id,
-            btn.dataset.title,
-            btn.dataset.type
-          );
+          openPlayer(btn.dataset.id, btn.dataset.title, btn.dataset.type);
         });
       });
     }
 
-    // Player modal function
     function openPlayer(itemId, title, mediaType) {
-      // Create modal
       const modal = document.createElement('div');
       modal.className = 'modal';
-      
-      // Disable scrolling on body
       document.body.style.overflow = 'hidden';
 
       modal.innerHTML = `
@@ -198,7 +161,6 @@
 
       document.body.appendChild(modal);
 
-      // Add server options
       const select = modal.querySelector('#server-select');
       SERVERS.forEach(server => {
         const option = document.createElement('option');
@@ -207,7 +169,6 @@
         select.appendChild(option);
       });
 
-      // Load first server by default
       loadServer(0);
 
       function loadServer(index) {
@@ -216,12 +177,10 @@
         const iframe = modal.querySelector('#player-frame');
         iframe.src = server.url(mediaType, itemId);
 
-        // Show loading shield
         const shield = modal.querySelector('.iframe-shield');
         shield.style.display = 'block';
         setTimeout(() => shield.style.display = 'none', 3000);
 
-        // Fallback to next server if error
         iframe.onerror = () => {
           if (index + 1 < SERVERS.length) {
             loadServer(index + 1);
@@ -231,34 +190,32 @@
         };
       }
 
-      // Server change handler
       select.addEventListener('change', () => {
-        const selectedServer = SERVERS.find(s => s.id === select.value);
-        if (selectedServer) {
-          modal.querySelector('#player-frame').src = selectedServer.url(mediaType, itemId);
+        const selected = SERVERS.find(s => s.id === select.value);
+        if (selected) {
+          modal.querySelector('#player-frame').src = selected.url(mediaType, itemId);
         }
       });
 
-      // Close handlers
-      modal.querySelector('.close-btn').addEventListener('click', closeModal);
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-      });
-
-      function closeModal() {
+      modal.querySelector('.close-btn').addEventListener('click', () => {
         document.body.style.overflow = '';
         modal.remove();
-      }
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          document.body.style.overflow = '';
+          modal.remove();
+        }
+      });
     }
 
-    // Initialize search when page loads
     document.addEventListener('DOMContentLoaded', () => {
       const query = getQuery();
       document.getElementById('search-input').value = query;
       document.getElementById('search-title').textContent = `🔍 Results for "${query}"`;
       searchMovies(query);
 
-      // Setup search button
       document.getElementById('search-button').addEventListener('click', () => {
         const newQuery = document.getElementById('search-input').value.trim();
         if (newQuery.length > 1) {
@@ -266,7 +223,6 @@
         }
       });
 
-      // Allow search on Enter key
       document.getElementById('search-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           document.getElementById('search-button').click();
