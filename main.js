@@ -219,20 +219,24 @@ async function loadGenres() {
     const data = await res.json();
     const genres = data.genres;
 
+    // Generate genre buttons
     container.innerHTML = genres.map(genre => `
       <button class="genre-btn" data-id="${genre.id}">${genre.name}</button>
     `).join('');
 
-    container.insertAdjacentHTML('afterbegin', `<button class="genre-btn" data-id="">All</button>`);
-
+    // Add event listeners to buttons
     document.querySelectorAll('.genre-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const genreId = btn.dataset.id;
         const genreName = btn.textContent.trim();
-       window.location.href = `genre.html?genre=${encodeURIComponent(genreName)}&id=${genreId}`;
-     });
-    
-    // loadByGenre(''); // Don't auto-load genre results 
+        window.location.href = `genre.html?genre=${encodeURIComponent(genreName)}&id=${genreId}`;
+      });
+    });
+
+  } catch (err) {
+    console.error('Failed to load genres:', err);
+  }
+}
 
   } catch (err) {
     console.error('Failed to load genres:', err);
