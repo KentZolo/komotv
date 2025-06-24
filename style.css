@@ -1,28 +1,21 @@
-/* ===== FULLY FIXED CSS ===== */
+/* ===== PERFECTLY MATCHED CSS ===== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html, body {
-  width: 100%;
-  overflow-x: hidden;
-}
-
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #0f0f0f;
-  color: #ffffff;
-  padding-top: 0;
+  background: #0f0f0f;
+  color: white;
 }
 
-/* ===== NAVBAR FIXED ===== */
+/* ===== NAVBAR ===== */
 .navbar {
   padding: 15px 20px;
-  background-color: #1a1a1a;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  margin-bottom: 0;
+  background: #1a1a1a;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
 }
 
 .search-bar {
@@ -36,41 +29,36 @@ body {
   padding: 12px 15px;
   border: none;
   border-radius: 25px 0 0 25px;
-  background-color: #2a2a2a;
+  background: #2a2a2a;
   color: white;
-  font-size: 16px;
 }
 
 #search-button {
   padding: 0 20px;
+  background: #e50914;
+  color: white;
   border: none;
   border-radius: 0 25px 25px 0;
-  background-color: #e50914;
-  color: white;
   cursor: pointer;
-  font-size: 18px;
 }
 
-/* ===== BANNER SLIDER - NO TOP SPACE ===== */
+/* ===== FEATURED BANNER (3:4 RATIO) ===== */
 .featured {
   padding: 0 20px 20px;
-  margin-top: 0;
 }
 
 .banner-slider {
-  width: 100%;
-  position: relative;
+  max-width: 400px;
   margin: 0 auto;
+  position: relative;
 }
 
 .poster-box {
   position: relative;
-  max-width: 400px;
-  margin: 0 auto;
+  aspect-ratio: 3/4;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-  aspect-ratio: 3/4;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.6);
 }
 
 .poster-image {
@@ -78,7 +66,6 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: opacity 0.5s ease;
 }
 
 .overlay {
@@ -87,25 +74,21 @@ body {
   left: 0;
   right: 0;
   padding: 20px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
-  color: white;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
 }
 
 .meta-text {
-  margin: 0;
   font-size: 14px;
   display: flex;
   gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255,255,255,0.9);
 }
 
 .title-text {
   margin: 8px 0 0;
   font-size: 1.8rem;
   font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .nav {
@@ -114,41 +97,28 @@ body {
   transform: translateY(-50%);
   width: 40px;
   height: 40px;
+  background: rgba(0,0,0,0.7);
+  color: white;
   border: none;
   border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
   font-size: 20px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 10;
-  transition: all 0.3s ease;
 }
 
-.nav:hover {
-  background-color: rgba(255, 255, 255, 0.9);
-  color: #000;
-  transform: translateY(-50%) scale(1.1);
-}
+.prev { left: 15px; }
+.next { right: 15px; }
 
-.prev {
-  left: 15px;
-}
-
-.next {
-  right: 15px;
-}
-
-/* ===== SWIPER SECTIONS ===== */
-section {
+/* ===== SWIPER SECTIONS (TRENDING/POPULAR) ===== */
+.trending, .popular, .tv {
   padding: 0 20px 30px;
   max-width: 1400px;
   margin: 0 auto;
 }
 
-section h2 {
+.trending h2, 
+.popular h2, 
+.tv h2 {
   font-size: 1.5rem;
   margin-bottom: 15px;
   display: flex;
@@ -156,19 +126,29 @@ section h2 {
   gap: 10px;
 }
 
-.swiper {
+.trending-swiper,
+.movie-swiper,
+.tv-swiper {
   padding: 10px 5px 25px;
 }
 
-.swiper-slide {
-  width: auto;
+.swiper-wrapper {
+  display: flex;
+  gap: 15px;
+}
+
+/* Movie card styles */
+.movie-list .swiper-slide,
+.popular-list .swiper-slide,
+.tv-list .swiper-slide {
+  width: 150px !important; /* Fixed width */
 }
 
 /* ===== FOOTER ===== */
 .footer {
   text-align: center;
   padding: 20px;
-  background-color: #1a1a1a;
+  background: #1a1a1a;
   margin-top: 30px;
   font-size: 14px;
   color: #777;
@@ -176,51 +156,21 @@ section h2 {
 
 /* ===== RESPONSIVE FIXES ===== */
 @media (max-width: 768px) {
-  .poster-box {
-    max-width: 350px;
-  }
-  
-  .title-text {
-    font-size: 1.5rem;
-  }
-  
-  .meta-text {
-    font-size: 13px;
-    gap: 10px;
-  }
-  
-  .nav {
-    width: 35px;
-    height: 35px;
-    font-size: 18px;
+  .poster-box { max-width: 350px; }
+  .title-text { font-size: 1.5rem; }
+  .movie-list .swiper-slide,
+  .popular-list .swiper-slide,
+  .tv-list .swiper-slide {
+    width: 120px !important;
   }
 }
 
 @media (max-width: 480px) {
-  .poster-box {
-    max-width: 300px;
-  }
-  
-  .title-text {
-    font-size: 1.3rem;
-  }
-  
-  .meta-text {
-    font-size: 12px;
-    gap: 8px;
-  }
-  
-  .nav {
-    width: 30px;
-    height: 30px;
-    font-size: 16px;
-  }
-  
-  section h2 {
-    font-size: 1.3rem;
-  }
-  
-  .featured {
-    padding: 0 10px 15px;
+  .poster-box { max-width: 300px; }
+  .title-text { font-size: 1.3rem; }
+  .movie-list .swiper-slide,
+  .popular-list .swiper-slide,
+  .tv-list .swiper-slide {
+    width: 100px !important;
   }
 }
