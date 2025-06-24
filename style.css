@@ -171,3 +171,53 @@ section h2 {
   font-size: 0.9rem;
   color: #999;
 }
+.poster-container {
+  position: relative;
+  max-width: 100%;
+  margin: 20px auto;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.poster-wrapper {
+  position: relative;
+}
+
+.poster-image {
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+}
+
+.bottom-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 10px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  z-index: 2;
+}
+
+.prev-arrow {
+  left: 10px;
+}
+
+.next-arrow {
+  right: 10px;
+}
