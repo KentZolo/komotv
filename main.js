@@ -23,52 +23,22 @@ const SERVERS = [
 // ----------------------
 // Featured Poster Logic
 // ----------------------
-let bannerIndex = 0;
-let bannerItems = [];
-
-async function loadBannerSlider() {
-  const res = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`);
-  const data = await res.json();
-  bannerItems = data.results.slice(0, 10); // top 10 now playing
-  showBannerSlide(bannerIndex);
-}
-
 function showBannerSlide(index) {
   const item = bannerItems[index];
   if (!item) return;
 
   const img = document.getElementById('poster-img');
   const meta = document.getElementById('poster-meta');
-  const summary = document.getElementById('poster-summary');
+  const title = document.getElementById('poster-title');
 
   img.src = IMG_BASE + (item.backdrop_path || item.poster_path);
   img.setAttribute('data-id', item.id);
   img.setAttribute('data-title', item.title);
   img.setAttribute('data-type', 'movie');
 
+  title.textContent = item.title;
   meta.textContent = `⭐ ${item.vote_average.toFixed(1)} · 🎬 Movie · ${item.release_date?.slice(0, 4) || ''}`;
-  summary.textContent = item.title;
 }
-
-function prevSlide() {
-  bannerIndex = (bannerIndex - 1 + bannerItems.length) % bannerItems.length;
-  showBannerSlide(bannerIndex);
-}
-
-function nextSlide() {
-  bannerIndex = (bannerIndex + 1) % bannerItems.length;
-  showBannerSlide(bannerIndex);
-}
-
-// Poster click = open player
-document.addEventListener('click', e => {
-  if (e.target.id === 'poster-img') {
-    const id = e.target.getAttribute('data-id');
-    const title = e.target.getAttribute('data-title');
-    const type = e.target.getAttribute('data-type');
-    openPlayer(id, title, type);
-  }
-});
 
 // 🔁 Call this in DOMContentLoaded
 loadBannerSlider();
