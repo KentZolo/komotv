@@ -20,116 +20,143 @@ const SERVERS = [
   }
 ];
 
-// ----------------------
-// Featured Poster Logic
-// ----------------------
+// DOM Elements
+const searchBtn = document.getElementById('search-button');
+const searchInput = document.getElementById('search-input');
+
+// Initialize Swipers
+function initSwipers() {
+  const swiperOptions = {
+    slidesPerView: 2,
+    spaceBetween: 10,
+    breakpoints: {
+      640: { slidesPerView: 3 },
+      768: { slidesPerView: 4 },
+      1024: { slidesPerView: 6 }
+    }
+  };
+
+  new Swiper('.trending-swiper', swiperOptions);
+  new Swiper('.movie-swiper', swiperOptions);
+  new Swiper('.tv-swiper', swiperOptions);
+}
+
+// Banner Slider
 let bannerIndex = 0;
 let bannerItems = [];
 
 async function loadBannerSlider() {
-  const res = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`);
-  const data = await res.json();
-  bannerItems = data.results.slice(0, 10); // top 10 now playing
-  showBannerSlide(bannerIndex);
+  try {
+    const res = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`);
+    if (!res.ok) throw new Error('Failed to fetch banner data');
+    const data = await res.json();
+    bannerItems = data.results.slice(0, 10);
+    showBannerSlide(bannerIndex);
+    
+    // Add event listeners after loading
+    document.querySelector('.prev').addEventListener('click', prevSlide);
+    document.querySelector('.next').addEventListener('click', nextSlide);
+  } catch (error) {
+    console.error('Banner error:', error);
+  }
 }
 
 function showBannerSlide(index) {
-  const item = bannerItems[index];
-  if (!item) return;
+  const item = bannerItems[index];
+  if (!item) return;
 
-  const img = document.getElementById('poster-img');
-  const meta = document.getElementById('poster-meta');
-  const summary = document.getElementById('poster-summary');
+  const img = document.getElementById('poster-img');
+  const meta = document.getElementById('poster-meta');
+  const summary = document.getElementById('poster-summary');
 
-  img.src = IMG_BASE + (item.backdrop_path || item.poster_path);
-  img.setAttribute('data-id', item.id);
-  img.setAttribute('data-title', item.title);
-  img.setAttribute('data-type', 'movie');
+  img.src = IMG_BASE + (item.backdrop_path || item.poster_path);
+  img.alt = item.title;
+  img.dataset.id = item.id;
+  img.dataset.title = item.title;
+  img.dataset.type = 'movie';
 
-  meta.textContent = `⭐ ${item.vote_average.toFixed(1)} · 🎬 Movie · ${item.release_date?.slice(0, 4) || ''}`;
-  summary.textContent = item.title;
+  meta.textContent = `⭐ ${item.vote_average.toFixed(1)} · 🎬 Movie · ${item.release_date?.slice(0, 4) || ''}`;
+  summary.textContent = item.title;
 }
 
 function prevSlide() {
-  bannerIndex = (bannerIndex - 1 + bannerItems.length) % bannerItems.length;
-  showBannerSlide(bannerIndex);
+  bannerIndex = (bannerIndex - 1 + bannerItems.length) % bannerItems.length;
+  showBannerSlide(bannerIndex);
 }
 
 function nextSlide() {
-  bannerIndex = (bannerIndex + 1) % bannerItems.length;
-  showBannerSlide(bannerIndex);
+  bannerIndex = (bannerIndex + 1) % bannerItems.length;
+  showBannerSlide(bannerIndex);
 }
 
-// Poster click = open player
-document.addEventListener('click', e => {
-  if (e.target.id === 'poster-img') {
-    const id = e.target.getAttribute('data-id');
-    const title = e.target.getAttribute('data-title');
-    const type = e.target.getAttribute('data-type');
-    openPlayer(id, title, type);
-  }
-});
- // ✅ Load banner slider
-  loadBannerSlider();
-
+// Fetch and display media
 async function fetchAndDisplay(endpoint, containerSelector, type) {
-  const res = await fetch(`${BASE_URL}${endpoint}?api_key=${API_KEY}`);
-  const data = await res.json();
-  displayMedia(data.results, containerSelector, type);
+  try {
+    const res = await fetch(`${BASE_URL}${endpoint}?api_key=${API_KEY}`);
+    if (!res.ok) throw new Error('Failed to fetch media');
+    const data = await res.json();
+    displayMedia(data.results, containerSelector, type);
+  } catch (error) {
+    console.error('Fetch error:', error);
+  }
 }
 
 function displayMedia(items, containerSelector, defaultType) {
   const container = document.querySelector(containerSelector);
-  container.innerHTML = '';
+  if (!container) return;
 
-  items.forEach(item => {
+  container.innerHTML = items.map(item => {
     const id = item.id;
     const title = item.title || item.name;
-    const poster = item.poster_path ? IMG_BASE + item.poster_path : '';
+    const poster = item.poster_path ? IMG_BASE + item.poster_path : 'placeholder.jpg';
     const mediaType = item.media_type || defaultType;
 
-    const card = document.createElement('div');
-    card.classList.add('swiper-slide', 'poster-wrapper');
-    card.innerHTML = `
-      <img src="${poster}" alt="${title}" style="cursor:pointer;" data-id="${id}" data-title="${title}" data-type="${mediaType}" />
-      <div class="poster-label">${title}</div>
+    return `
+      <div class="swiper-slide poster-wrapper">
+        <img src="${poster}" alt="${title}" 
+             data-id="${id}" 
+             data-title="${title}" 
+             data-type="${mediaType}">
+        <div class="poster-label">${title}</div>
+      </div>
     `;
-    container.appendChild(card);
-  });
+  }).join('');
 
+  // Add click events to all posters
   document.querySelectorAll('.poster-wrapper img').forEach(img => {
     img.addEventListener('click', () => {
-      const id = img.getAttribute('data-id');
-      const title = img.getAttribute('data-title');
-      const type = img.getAttribute('data-type');
-      openPlayer(id, title, type);
+      openPlayer(
+        img.dataset.id,
+        img.dataset.title,
+        img.dataset.type
+      );
     });
   });
 }
 
-// ----------------------
 // Video Player Modal
-// ----------------------
-
 function openPlayer(itemId, title, mediaType) {
+  // Create modal
   const modal = document.createElement('div');
-  modal.classList.add('modal');
+  modal.className = 'modal';
+  
+  // Disable body scrolling
+  document.body.style.overflow = 'hidden';
 
   modal.innerHTML = `
     <div class="modal-content">
       <span class="close-btn">×</span>
-      <label style="color:white;">Change Server:</label>
+      <label style="color:white;">Server:</label>
       <select id="server-select"></select>
       <div class="iframe-shield"></div>
-      <iframe id="player-frame" width="100%" height="500" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
+      <iframe id="player-frame" allowfullscreen></iframe>
     </div>
   `;
 
   document.body.appendChild(modal);
 
-  const iframe = modal.querySelector('#player-frame');
+  // Add server options
   const select = modal.querySelector('#server-select');
-
   SERVERS.forEach(server => {
     const option = document.createElement('option');
     option.value = server.id;
@@ -137,83 +164,71 @@ function openPlayer(itemId, title, mediaType) {
     select.appendChild(option);
   });
 
+  // Load first server by default
+  loadServer(0);
+
   function loadServer(index) {
     const server = SERVERS[index];
     select.value = server.id;
-    const url = server.url(mediaType, itemId);
-    iframe.src = url;
+    const iframe = modal.querySelector('#player-frame');
+    iframe.src = server.url(mediaType, itemId);
 
+    // Show loading shield
     const shield = modal.querySelector('.iframe-shield');
     shield.style.display = 'block';
-    setTimeout(() => shield.remove(), 5000);
+    setTimeout(() => shield.style.display = 'none', 3000);
 
+    // Fallback to next server if error
     iframe.onerror = () => {
-      if (index + 1 < SERVERS.length) loadServer(index + 1);
-      else alert('⚠️ No working server found.');
+      if (index + 1 < SERVERS.length) {
+        loadServer(index + 1);
+      } else {
+        alert('No working server found. Please try again later.');
+      }
     };
   }
 
-  loadServer(0);
+  // Server change handler
+  select.addEventListener('change', () => {
+    const selectedServer = SERVERS.find(s => s.id === select.value);
+    if (selectedServer) {
+      modal.querySelector('#player-frame').src = selectedServer.url(mediaType, itemId);
+    }
+  });
 
-  modal.querySelector('.close-btn').onclick = () => modal.remove();
-  select.onchange = () => {
-    const i = SERVERS.findIndex(s => s.id === select.value);
-    if (i !== -1) loadServer(i);
-  };
+  // Close handlers
+  modal.querySelector('.close-btn').addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  function closeModal() {
+    document.body.style.overflow = '';
+    modal.remove();
+  }
 }
 
-// ----------------------
-// Search Redirect
-// ----------------------
-
-if (document.getElementById('search-button')) {
-  document.getElementById('search-button').addEventListener('click', () => {
-    const q = document.getElementById('search-input').value.trim();
-    if (q.length > 1) {
-      window.location.href = `search.html?q=${encodeURIComponent(q)}`;
+// Search functionality
+if (searchBtn && searchInput) {
+  searchBtn.addEventListener('click', () => {
+    const query = searchInput.value.trim();
+    if (query.length > 1) {
+      window.location.href = `search.html?q=${encodeURIComponent(query)}`;
     }
+  });
+
+  searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') searchBtn.click();
   });
 }
 
-// ----------------------
-// Init on Page Load
-// ----------------------
-
+// Initialize everything
 window.addEventListener('DOMContentLoaded', () => {
-  fetchAndDisplay('/trending/all/day', '.movie-list', 'movie');
-  fetchAndDisplay('/movie/popular', '.popular-list', 'movie');
-  fetchAndDisplay('/tv/popular', '.tv-list', 'tv');
-
-  new Swiper('.trending-swiper', {
-    slidesPerView: 2,
-    spaceBetween: 10,
-    breakpoints: {
-      640: { slidesPerView: 3 },
-      768: { slidesPerView: 4 },
-      1024: { slidesPerView: 6 }
-    }
-  });
-
-  new Swiper('.movie-swiper', {
-    slidesPerView: 2,
-    spaceBetween: 10,
-    breakpoints: {
-      640: { slidesPerView: 3 },
-      768: { slidesPerView: 4 },
-      1024: { slidesPerView: 6 }
-    }
-  });
-
-  new Swiper('.tv-swiper', {
-    slidesPerView: 2,
-    spaceBetween: 10,
-    breakpoints: {
-      640: { slidesPerView: 3 },
-      768: { slidesPerView: 4 },
-      1024: { slidesPerView: 6 }
-    }
-  });
-
-  // ✅ Load Featured Poster (top section)
-  loadFeaturedPosters();
+  loadBannerSlider();
+  
+  Promise.all([
+    fetchAndDisplay('/trending/all/day', '.movie-list', 'movie'),
+    fetchAndDisplay('/movie/popular', '.popular-list', 'movie'),
+    fetchAndDisplay('/tv/popular', '.tv-list', 'tv')
+  ]).then(initSwipers);
 });
