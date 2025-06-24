@@ -88,11 +88,11 @@ function displayMedia(items, containerSelector, defaultType) {
   container.querySelectorAll('.poster-wrapper').forEach(poster => {
     poster.addEventListener('click', () => {
       const img = poster.querySelector('img');
-      openPlayer(img.dataset.id, img.dataset.title, img.dataset.type);
-    });
+      const id = img.dataset.id;
+      const type = img.dataset.type;
+      window.location.href = `poster.html?id=${id}&type=${type}`;
   });
-}
-
+    
 function openPlayer(itemId, title, mediaType) {
   const modal = document.createElement('div');
   modal.className = 'modal';
