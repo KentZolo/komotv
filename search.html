@@ -48,7 +48,8 @@
 
   <section class="trending">
     <h2 id="search-title" class="search-title">🔍 Search Results</h2>
-    <div class="movie-list" id="results"></div>
+    <div class="search-results-grid" id="results-grid"></div>
+
   </section>
 
   <script>
@@ -88,7 +89,7 @@
     }
 
     function displayResults(results, query) {
-      const container = document.getElementById('results');
+      const container = document.getElementById('results-grid');
 
       if (!results || results.length === 0) {
         container.innerHTML = `<p class="no-results">No results found for "${query}"</p>`;
