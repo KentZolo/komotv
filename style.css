@@ -346,3 +346,10 @@ html, body {
     font-size: 1.3rem;
   }
 }
+.genre-section {
+  display: none;
+}
+
+.genre-section.active {
+  display: block;
+}
