@@ -20,6 +20,63 @@ const SERVERS = [
   }
 ];
 
+// ----------------------
+// Featured Poster Logic
+// ----------------------
+
+let featuredIndex = 0;
+let featuredItems = [];
+
+async function loadFeaturedPosters() {
+  const res = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`);
+  const data = await res.json();
+  featuredItems = data.results.slice(0, 10); // top 10 now playing
+  showFeatured(featuredIndex);
+}
+
+function showFeatured(index) {
+  const item = featuredItems[index];
+  if (!item) return;
+
+  document.getElementById('current-poster').src =
+    IMG_BASE + (item.backdrop_path || item.poster_path);
+
+  document.getElementById('featured-rating').textContent = `⭐ ${item.vote_average.toFixed(1)}`;
+  document.getElementById('featured-type').textContent = '🎬 Movie';
+  document.getElementById('featured-year').textContent = item.release_date
+    ? item.release_date.slice(0, 4)
+    : '';
+
+  const img = document.getElementById('current-poster');
+  img.setAttribute('data-id', item.id);
+  img.setAttribute('data-title', item.title);
+  img.setAttribute('data-type', 'movie');
+}
+
+// Handle arrow clicks & poster click
+document.addEventListener('click', e => {
+  if (e.target.id === 'current-poster') {
+    const id = e.target.getAttribute('data-id');
+    const title = e.target.getAttribute('data-title');
+    const type = e.target.getAttribute('data-type');
+    openPlayer(id, title, type);
+  }
+
+  if (e.target.classList.contains('prev-arrow')) {
+    featuredIndex = (featuredIndex - 1 + featuredItems.length) % featuredItems.length;
+    showFeatured(featuredIndex);
+  }
+
+  if (e.target.classList.contains('next-arrow')) {
+    featuredIndex = (featuredIndex + 1) % featuredItems.length;
+    showFeatured(featuredIndex);
+  }
+});
+
+// ----------------------
+// Fetch and Display Logic
+// ----------------------
+
 async function fetchAndDisplay(endpoint, containerSelector, type) {
   const res = await fetch(`${BASE_URL}${endpoint}?api_key=${API_KEY}`);
   const data = await res.json();
@@ -54,6 +111,10 @@ function displayMedia(items, containerSelector, defaultType) {
     });
   });
 }
+
+// ----------------------
+// Video Player Modal
+// ----------------------
 
 function openPlayer(itemId, title, mediaType) {
   const modal = document.createElement('div');
@@ -106,7 +167,10 @@ function openPlayer(itemId, title, mediaType) {
   };
 }
 
-// SEARCH REDIRECT
+// ----------------------
+// Search Redirect
+// ----------------------
+
 if (document.getElementById('search-button')) {
   document.getElementById('search-button').addEventListener('click', () => {
     const q = document.getElementById('search-input').value.trim();
@@ -116,7 +180,10 @@ if (document.getElementById('search-button')) {
   });
 }
 
-// INIT
+// ----------------------
+// Init on Page Load
+// ----------------------
+
 window.addEventListener('DOMContentLoaded', () => {
   fetchAndDisplay('/trending/all/day', '.movie-list', 'movie');
   fetchAndDisplay('/movie/popular', '.popular-list', 'movie');
@@ -151,5 +218,7 @@ window.addEventListener('DOMContentLoaded', () => {
       1024: { slidesPerView: 6 }
     }
   });
+
+  // ✅ Load Featured Poster (top section)
+  loadFeaturedPosters();
 });
-  
