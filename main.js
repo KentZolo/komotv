@@ -228,9 +228,9 @@ async function loadGenres() {
     document.querySelectorAll('.genre-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const genreId = btn.dataset.id;
-        loadByGenre(genreId);
-      });
-    });
+        const genreName = btn.textContent.trim();
+       window.location.href = `genre.html?genre=${encodeURIComponent(genreName)}&id=${genreId}`;
+     });
     
     // loadByGenre(''); // Don't auto-load genre results 
 
