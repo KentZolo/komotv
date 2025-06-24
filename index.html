@@ -15,10 +15,26 @@
     </div>
   </header>
 
-  <section class="hero">
-    <img src="banner.jpg" alt="Banner" class="banner" />
-  </section>
+  <!-- Featured Poster -->
+<section class="featured">
+  <div class="poster-container">
+    <div class="poster-wrapper" id="featured-wrapper">
+      <img id="current-poster" src="" alt="Featured Poster" class="poster-image" />
 
+      <div class="bottom-overlay">
+        <div class="info-container">
+          <span class="rating" id="featured-rating"></span>
+          <span class="type" id="featured-type"></span>
+          <span class="year" id="featured-year"></span>
+        </div>
+      </div>
+
+      <button class="nav-arrow prev-arrow">‹</button>
+      <button class="nav-arrow next-arrow">›</button>
+    </div>
+  </div>
+</section>
+  
   <section class="trending">
     <h2>🔥 Trending Now</h2>
     <div class="swiper trending-swiper">
