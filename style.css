@@ -166,13 +166,6 @@ section h2 {
   padding: 10px 10px 30px !important;
 }
 
-.search-results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px;
-  padding: 20px;
-}
-
 .swiper-slide {
   transition: transform 0.3s ease;
 }
@@ -206,6 +199,44 @@ section h2 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ===== SEARCH GRID STYLES ===== */
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
+.search-title {
+  padding: 20px;
+  text-align: center;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px;
+  color: #aaa;
+}
+
+.watch-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #e50914;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.poster-wrapper:hover .watch-btn {
+  opacity: 1;
 }
 
 /* ===== MODAL PLAYER ===== */
