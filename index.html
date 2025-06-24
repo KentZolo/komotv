@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KomoTV - Home</title>
-  <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="navbar">
@@ -16,22 +16,19 @@
   </header>
 
   <!-- Featured Poster -->
-<section class="featured">
-  <div class="banner-slider">
-    <div class="poster-box" id="active-slide">
-      <button class="nav prev" onclick="prevSlide()">‹</button>
-
-      <img id="poster-img" src="" alt="Poster" class="poster-image" />
-
-      <div class="overlay">
-        <p id="poster-meta" class="meta-text">⭐ 8.5 · 🎬 Movie · 2024</p>
-        <h2 id="poster-summary" class="title-text">Movie Title Here</h2>
-      </div>
-
-      <button class="nav next" onclick="nextSlide()">›</button>
-    </div>
-  </div>
-</section>
+  <section class="featured">
+    <div class="banner-slider">
+      <div class="poster-box" id="active-slide">
+        <button class="nav prev">‹</button>
+        <img id="poster-img" src="" alt="Poster" class="poster-image" />
+        <div class="overlay">
+          <p id="poster-meta" class="meta-text"></p>
+          <h2 id="poster-summary" class="title-text"></h2>
+        </div>
+        <button class="nav next">›</button>
+      </div>
+    </div>
+  </section>
   
   <section class="trending">
     <h2>🔥 Trending Now</h2>
@@ -59,14 +56,6 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
-  <script src="main.js"></script>
-  <script>
-    document.getElementById('search-button').addEventListener('click', () => {
-      const q = document.getElementById('search-input').value.trim();
-      if (q.length > 1) {
-        window.location.href = `search.html?q=${encodeURIComponent(q)}`;
-      }
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
