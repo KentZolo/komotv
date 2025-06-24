@@ -38,6 +38,7 @@ html, body {
   border-radius: 4px 0 0 4px;
   font-size: 16px;
   background-color: rgba(255, 255, 255, 0.9);
+  color: black;
 }
 
 #search-button {
@@ -274,11 +275,11 @@ section h2 {
   .title-text {
     font-size: 1.8rem;
   }
-  
+
   .meta-text {
     font-size: 14px;
   }
-  
+
   .nav {
     width: 40px;
     height: 40px;
@@ -294,22 +295,22 @@ section h2 {
   .title-text {
     font-size: 1.5rem;
   }
-  
+
   .meta-text {
     font-size: 12px;
     gap: 8px;
   }
-  
+
   .overlay {
     padding: 15px;
   }
-  
+
   .nav {
     width: 35px;
     height: 35px;
     font-size: 18px;
   }
-  
+
   section h2 {
     font-size: 1.3rem;
   }
