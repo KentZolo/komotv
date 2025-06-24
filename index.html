@@ -3,18 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KomoTV - Home</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
-  <link rel="stylesheet" href="style.css"/>
+  <title>KomoTV</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- 🔘 Top Navbar with Hamburger -->
   <header class="navbar">
-    <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search movies or shows...">
-      <button id="search-button">🔍</button>
-    </div>
+    <button class="menu-toggle" id="menu-toggle">☰</button>
   </header>
 
+  <!-- 📂 Slide Menu -->
+  <aside class="slide-panel" id="menu-panel">
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Search movies or shows..." />
+      <button id="search-button">🔍</button>
+    </div>
+    <div class="genre-menu">
+      <h3>🎯 Filter by Genre</h3>
+      <div class="genre-buttons" id="genre-buttons"></div>
+    </div>
+  </aside>
+
+  <!-- 🎞️ Banner -->
   <section class="featured">
     <div class="banner-slider">
       <div class="poster-box" id="active-slide">
@@ -29,6 +40,15 @@
     </div>
   </section>
 
+  <!-- 🌀 Genre Result Section -->
+  <section class="genre-section">
+    <h2>📂 Genre Results</h2>
+    <div class="swiper genre-swiper">
+      <div class="swiper-wrapper" id="genre-results"></div>
+    </div>
+  </section>
+
+  <!-- 🔥 Trending -->
   <section class="trending">
     <h2>🔥 Trending Now</h2>
     <div class="swiper trending-swiper">
@@ -36,6 +56,7 @@
     </div>
   </section>
 
+  <!-- 🎬 Popular Movies -->
   <section class="popular">
     <h2>🎬 Popular Movies</h2>
     <div class="swiper movie-swiper">
@@ -43,6 +64,7 @@
     </div>
   </section>
 
+  <!-- 📺 Popular TV -->
   <section class="tv">
     <h2>📺 Popular TV Shows</h2>
     <div class="swiper tv-swiper">
@@ -50,8 +72,9 @@
     </div>
   </section>
 
+  <!-- 📜 Footer -->
   <footer class="footer">
-    <p>&copy; 2025 KomoTV - Educational use only</p>
+    <p>&copy; 2025 KomoTV - All rights reserved</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
