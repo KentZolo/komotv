@@ -70,6 +70,8 @@
 
     async function searchMovies(query) {
       const container = document.getElementById('results-grid');
+      container.innerHTML = '<p class="no-results">Searching...</p>';
+      
 
       if (!query || query.length < 2) {
         container.innerHTML = '<p class="no-results">Please enter a valid search term (min 2 characters)</p>';
@@ -90,6 +92,10 @@
 
     function displayResults(results, query) {
       const container = document.getElementById('results-grid');
+      container.innerHTML = filtered.map(item => {
+    // generate result cards
+    }).join('');
+      
 
       if (!results || results.length === 0) {
         container.innerHTML = `<p class="no-results">No results found for "${query}"</p>`;
