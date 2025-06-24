@@ -39,15 +39,15 @@ function showBannerSlide(index) {
 
   const img = document.getElementById('poster-img');
   const meta = document.getElementById('poster-meta');
-  const title = document.getElementById('poster-title');
+  const summary = document.getElementById('poster-summary');
 
   img.src = IMG_BASE + (item.backdrop_path || item.poster_path);
   img.setAttribute('data-id', item.id);
   img.setAttribute('data-title', item.title);
   img.setAttribute('data-type', 'movie');
 
-  title.textContent = item.title;
   meta.textContent = `⭐ ${item.vote_average.toFixed(1)} · 🎬 Movie · ${item.release_date?.slice(0, 4) || ''}`;
+  summary.textContent = item.title;
 }
 
 function prevSlide() {
