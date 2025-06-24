@@ -1,190 +1,28 @@
-/* Basic reset */
+/* ===== FULLY FIXED CSS ===== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background: #0f0f0f;
-  color: white;
-}
-
-/* Navbar */
-.navbar {
-  background: #1a1a1a;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #ff2c57;
-}
-
-.search-bar {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.search-bar input {
-  padding: 0.5rem;
-  width: 200px;
-  border: none;
-  border-radius: 5px;
-}
-
-.search-bar button {
-  background: #ff2c57;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  color: white;
-}
-
-/* Hero Section */
-.hero {
-  position: relative;
-  text-align: left;
-  margin-bottom: 2rem;
-}
-
-.banner {
+html, body {
   width: 100%;
-  height: 250px;
-  object-fit: cover;
-  filter: brightness(0.5);
+  overflow-x: hidden;
 }
 
-.hero-info {
-  position: absolute;
-  top: 30%;
-  left: 5%;
-}
-
-.hero-info h1 {
-  font-size: 2rem;
-  color: white;
-}
-
-.hero-info p {
-  font-size: 1rem;
-  margin-top: 0.5rem;
-}
-
-.hero-info .play-btn {
-  background: #ff2c57;
-  border: none;
-  padding: 0.5rem 1.2rem;
-  color: white;
-  margin-top: 1rem;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-/* Sections */
-section {
-  padding: 1rem;
-}
-
-section h2 {
-  margin-bottom: 1rem;
-  color: #ff2c57;
-}
-
-/* Movie Cards */
-.poster-wrapper {
-  position: relative;
-  text-align: center;
-  margin: 0.5rem;
-}
-
-.poster-wrapper img {
-  width: 100%;
-  border-radius: 10px;
-}
-
-.poster-label {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.watch-btn {
-  margin-top: 0.3rem;
-  padding: 0.4rem 0.8rem;
-  background: #ff2c57;
-  border: none;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Modal */
-.modal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.modal-content {
-  position: relative;
-  width: 90%;
-  max-width: 800px;
-  background: #111;
-  padding: 1rem;
-  border-radius: 10px;
-}
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 1.5rem;
-  color: white;
-  cursor: pointer;
-}
-
-.iframe-shield {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 10;
-  background: transparent;
-}
-
-/* Footer */
-.footer {
-  text-align: center;
-  padding: 1rem;
-  background: #111;
-  font-size: 0.9rem;
-  color: #999;
-}
-/* ===== GLOBAL STYLES ===== */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 0;
   background-color: #0f0f0f;
   color: #ffffff;
+  padding-top: 0;
 }
 
-/* ===== NAVBAR STYLES ===== */
+/* ===== NAVBAR FIXED ===== */
 .navbar {
   padding: 15px 20px;
   background-color: #1a1a1a;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  margin-bottom: 0;
 }
 
 .search-bar {
@@ -213,20 +51,21 @@ body {
   font-size: 18px;
 }
 
-/* ===== BANNER SLIDER STYLES (3:4 Aspect Ratio) ===== */
+/* ===== BANNER SLIDER - NO TOP SPACE ===== */
 .featured {
-  padding: 20px;
+  padding: 0 20px 20px;
+  margin-top: 0;
 }
 
 .banner-slider {
   width: 100%;
   position: relative;
-  margin: 0 auto 40px;
+  margin: 0 auto;
 }
 
 .poster-box {
   position: relative;
-  max-width: 400px; /* Perfect for 3:4 ratio */
+  max-width: 400px;
   margin: 0 auto;
   border-radius: 12px;
   overflow: hidden;
@@ -242,7 +81,6 @@ body {
   transition: opacity 0.5s ease;
 }
 
-/* Overlay Styles */
 .overlay {
   position: absolute;
   bottom: 0;
@@ -270,7 +108,6 @@ body {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* Navigation Buttons */
 .nav {
   position: absolute;
   top: 50%;
@@ -304,7 +141,7 @@ body {
   right: 15px;
 }
 
-/* ===== SWIPER SECTION STYLES ===== */
+/* ===== SWIPER SECTIONS ===== */
 section {
   padding: 0 20px 30px;
   max-width: 1400px;
@@ -327,7 +164,7 @@ section h2 {
   width: auto;
 }
 
-/* ===== FOOTER STYLES ===== */
+/* ===== FOOTER ===== */
 .footer {
   text-align: center;
   padding: 20px;
@@ -337,7 +174,7 @@ section h2 {
   color: #777;
 }
 
-/* ===== RESPONSIVE ADJUSTMENTS ===== */
+/* ===== RESPONSIVE FIXES ===== */
 @media (max-width: 768px) {
   .poster-box {
     max-width: 350px;
@@ -381,5 +218,9 @@ section h2 {
   
   section h2 {
     font-size: 1.3rem;
+  }
+  
+  .featured {
+    padding: 0 10px 15px;
   }
 }
