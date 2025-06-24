@@ -1,90 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Details</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Details - KomoTV</title>
+  <link rel="stylesheet" href="style.css">
   <style>
     .detail-container {
-      max-width: 900px;
+      max-width: 960px;
       margin: 40px auto;
       padding: 20px;
       display: flex;
-      gap: 20px;
       flex-wrap: wrap;
+      gap: 20px;
     }
-
-    .detail-poster {
-      flex: 1 1 300px;
-    }
-
     .detail-poster img {
       width: 100%;
       border-radius: 8px;
     }
-
     .detail-info {
-      flex: 2 1 400px;
+      flex: 1 1 400px;
     }
-
     .detail-title {
       font-size: 2rem;
       margin-bottom: 10px;
     }
-
-    .detail-meta {
-      color: #bbb;
+    .detail-meta, .genres {
       margin-bottom: 10px;
+      color: #ccc;
     }
-
-    .detail-overview {
-      font-size: 1rem;
-      line-height: 1.6;
-    }
-
-    .genres {
-      margin: 15px 0;
-    }
-
     .genres span {
       background: #222;
       padding: 5px 10px;
       border-radius: 4px;
       margin-right: 6px;
       font-size: 14px;
+      display: inline-block;
     }
-
     .watch-btn {
       background-color: #e50914;
       color: white;
       border: none;
       padding: 10px 15px;
-      border-radius: 4px;
       font-size: 16px;
+      border-radius: 4px;
       cursor: pointer;
       margin-top: 20px;
     }
   </style>
 </head>
 <body>
-
   <header class="navbar">
     <button onclick="history.back()" class="menu-toggle">←</button>
-    <h2 style="margin-left: 15px;">🎬 Movie Details</h2>
+    <h1 class="logo">KomoTV</h1>
   </header>
 
   <div class="detail-container" id="detail-container">Loading...</div>
 
-  <!-- Modal Player (Reused from other pages) -->
   <script>
     const API_KEY = '77312bdd4669c80af3d08e0bf719d7ff';
     const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
     const FALLBACK_IMAGE = 'https://via.placeholder.com/500x750?text=No+Poster';
 
-    const params = new URLSearchParams(window.location.search);
-    const itemId = params.get('id');
-    const mediaType = params.get('type');
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    const type = params.get('type');
 
     const SERVERS = [
       { id: 'apimocine', name: 'Apimocine', url: (t, id) => `https://apimocine.vercel.app/${t}/${id}?autoplay=true` },
@@ -95,36 +75,37 @@
     async function loadDetails() {
       const container = document.getElementById('detail-container');
       try {
-        const res = await fetch(`https://api.themoviedb.org/3/${mediaType}/${itemId}?api_key=${API_KEY}`);
+        const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${API_KEY}`);
         const data = await res.json();
 
         const title = data.title || data.name;
-        const poster = data.poster_path ? IMG_BASE + data.poster_path : FALLBACK_IMAGE;
         const year = (data.release_date || data.first_air_date || '').slice(0, 4);
+        const poster = data.poster_path ? IMG_BASE + data.poster_path : FALLBACK_IMAGE;
+        const overview = data.overview || 'No description available.';
         const rating = data.vote_average?.toFixed(1) || 'N/A';
         const genres = data.genres.map(g => `<span>${g.name}</span>`).join('');
 
         document.title = `${title} - KomoTV`;
 
         container.innerHTML = `
-          <div class="detail-poster">
+          <div class="detail-poster" style="flex:1 1 250px">
             <img src="${poster}" alt="${title}">
           </div>
           <div class="detail-info">
             <div class="detail-title">${title}</div>
-            <div class="detail-meta">⭐ ${rating} · 📅 ${year} · ${mediaType.toUpperCase()}</div>
+            <div class="detail-meta">⭐ ${rating} · ${type.toUpperCase()} · ${year}</div>
             <div class="genres">${genres}</div>
-            <div class="detail-overview">${data.overview || 'No overview available.'}</div>
-            <button class="watch-btn" onclick="openPlayer('${itemId}', '${title}', '${mediaType}')">▶ Watch</button>
+            <p>${overview}</p>
+            <button class="watch-btn" onclick="openPlayer('${id}', '${title}', '${type}')">▶ Watch Now</button>
           </div>
         `;
       } catch (err) {
-        console.error('Failed to load details:', err);
         container.innerHTML = '<p>Failed to load movie details.</p>';
+        console.error(err);
       }
     }
 
-    function openPlayer(itemId, title, mediaType) {
+    function openPlayer(id, title, type) {
       const modal = document.createElement('div');
       modal.className = 'modal';
       document.body.style.overflow = 'hidden';
@@ -141,8 +122,8 @@
       `;
 
       document.body.appendChild(modal);
-
       const select = modal.querySelector('#server-select');
+
       SERVERS.forEach(server => {
         const option = document.createElement('option');
         option.value = server.id;
@@ -154,7 +135,7 @@
         const server = SERVERS[index];
         select.value = server.id;
         const iframe = modal.querySelector('#player-frame');
-        iframe.src = server.url(mediaType, itemId);
+        iframe.src = server.url(type, id);
 
         const shield = modal.querySelector('.iframe-shield');
         shield.style.display = 'block';
@@ -174,19 +155,19 @@
       select.addEventListener('change', () => {
         const selected = SERVERS.find(s => s.id === select.value);
         if (selected) {
-          modal.querySelector('#player-frame').src = selected.url(mediaType, itemId);
+          modal.querySelector('#player-frame').src = selected.url(type, id);
         }
       });
 
       modal.querySelector('.close-btn').addEventListener('click', () => {
-        document.body.style.overflow = '';
         modal.remove();
+        document.body.style.overflow = '';
       });
 
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-          document.body.style.overflow = '';
           modal.remove();
+          document.body.style.overflow = '';
         }
       });
     }
