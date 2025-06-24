@@ -3,7 +3,6 @@ const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
 const FALLBACK_IMAGE = 'https://via.placeholder.com/500x750?text=No+Poster';
 
-// Helper function
 function getImageUrl(path, isBackdrop = false) {
   if (!path) {
     return isBackdrop
@@ -13,11 +12,9 @@ function getImageUrl(path, isBackdrop = false) {
   return `${IMG_BASE}${path}`;
 }
 
-// Elements
 const searchBtn = document.getElementById('search-button');
 const searchInput = document.getElementById('search-input');
 
-// Banner
 let bannerIndex = 0;
 let bannerItems = [];
 
@@ -26,7 +23,6 @@ async function loadBannerSlider() {
     const res = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`);
     const data = await res.json();
     bannerItems = data.results.slice(0, 10);
-
     if (bannerItems.length > 0) {
       showBannerSlide(bannerIndex);
       document.querySelector('.prev').addEventListener('click', prevSlide);
@@ -34,7 +30,7 @@ async function loadBannerSlider() {
     }
   } catch (err) {
     console.error('Banner error:', err);
-    document.getElementById('poster-summary').textContent = 'Failed to load featured content';
+    document.getElementById('poster-summary').textContent = 'Failed to load banner.';
   }
 }
 
@@ -62,7 +58,6 @@ function nextSlide() {
   showBannerSlide(bannerIndex);
 }
 
-// Content Sections
 async function fetchAndDisplay(endpoint, containerSelector, type) {
   try {
     const res = await fetch(`${BASE_URL}${endpoint}?api_key=${API_KEY}`);
@@ -70,10 +65,6 @@ async function fetchAndDisplay(endpoint, containerSelector, type) {
     displayMedia(data.results, containerSelector, type);
   } catch (err) {
     console.error(`Failed to load ${type}:`, err);
-    const container = document.querySelector(containerSelector);
-    if (container) {
-      container.innerHTML = `<div class="error">Failed to load ${type}</div>`;
-    }
   }
 }
 
@@ -105,7 +96,6 @@ function displayMedia(items, containerSelector, defaultType) {
   });
 }
 
-// Player Modal
 function openPlayer(itemId, title, mediaType) {
   const modal = document.createElement('div');
   modal.className = 'modal';
@@ -114,7 +104,8 @@ function openPlayer(itemId, title, mediaType) {
   modal.innerHTML = `
     <div class="modal-content">
       <span class="close-btn">×</span>
-      <label style="color:white;">Server:</label>
+      <h3>${title}</h3>
+      <label>Server:</label>
       <select id="server-select"></select>
       <div class="iframe-shield">Loading...</div>
       <iframe id="player-frame" allowfullscreen></iframe>
@@ -122,21 +113,19 @@ function openPlayer(itemId, title, mediaType) {
   `;
   document.body.appendChild(modal);
 
-  const select = modal.querySelector('#server-select');
   const servers = [
     { id: 'apimocine', name: 'Apimocine', url: (t, id) => `https://apimocine.vercel.app/${t}/${id}?autoplay=true` },
     { id: 'vidsrc', name: 'Vidsrc.to', url: (t, id) => `https://vidsrc.to/embed/${t}/${id}` },
     { id: 'vidsrccc', name: 'Vidsrc.cc', url: (t, id) => `https://vidsrc.cc/v2/embed/${t}/${id}` }
   ];
 
+  const select = modal.querySelector('#server-select');
   servers.forEach(server => {
     const option = document.createElement('option');
     option.value = server.id;
     option.textContent = server.name;
     select.appendChild(option);
   });
-
-  loadServer(0);
 
   function loadServer(index) {
     const server = servers[index];
@@ -149,10 +138,15 @@ function openPlayer(itemId, title, mediaType) {
     setTimeout(() => shield.style.display = 'none', 3000);
 
     iframe.onerror = () => {
-      if (index + 1 < servers.length) loadServer(index + 1);
-      else shield.textContent = 'Failed to load video';
+      if (index + 1 < servers.length) {
+        loadServer(index + 1);
+      } else {
+        shield.textContent = 'Failed to load video.';
+      }
     };
   }
+
+  loadServer(0);
 
   select.addEventListener('change', () => {
     const selected = servers.find(s => s.id === select.value);
@@ -174,7 +168,6 @@ function openPlayer(itemId, title, mediaType) {
   });
 }
 
-// Swipers
 function initSwipers() {
   const options = {
     slidesPerView: 2,
@@ -190,7 +183,6 @@ function initSwipers() {
   new Swiper('.tv-swiper', options);
 }
 
-// Search
 if (searchBtn && searchInput) {
   searchBtn.addEventListener('click', () => {
     const query = searchInput.value.trim();
@@ -203,7 +195,6 @@ if (searchBtn && searchInput) {
   });
 }
 
-// Init
 window.addEventListener('DOMContentLoaded', () => {
   loadBannerSlider();
   Promise.all([
@@ -212,3 +203,4 @@ window.addEventListener('DOMContentLoaded', () => {
     fetchAndDisplay('/tv/popular', '.tv-list', 'tv')
   ]).then(initSwipers);
 });
+      
