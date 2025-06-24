@@ -1,16 +1,17 @@
+// KomoTV main.js - Fully working homepage + poster.html support
 const API_KEY = '77312bdd4669c80af3d08e0bf719d7ff';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
-const FALLBACK_IMAGE = 'https://via.placeholder.com/500x750?text=No+Poster';
 
 function getImageUrl(path, isBackdrop = false) {
   return path
     ? `${IMG_BASE}${path}`
-    : (isBackdrop
-      ? 'https://via.placeholder.com/1920x1080?text=No+Banner'
-      : FALLBACK_IMAGE);
+    : isBackdrop
+    ? 'https://via.placeholder.com/1920x1080?text=No+Banner'
+    : 'https://via.placeholder.com/500x750?text=No+Poster';
 }
 
+// Banner Logic
 let bannerIndex = 0;
 let bannerItems = [];
 
@@ -26,7 +27,6 @@ async function loadBannerSlider() {
     }
   } catch (err) {
     console.error('Banner error:', err);
-    document.getElementById('poster-summary').textContent = 'Failed to load banner.';
   }
 }
 
@@ -41,6 +41,10 @@ function showBannerSlide(index) {
   document.getElementById('poster-meta').textContent =
     `⭐ ${item.vote_average?.toFixed(1) || 'N/A'} · 🎬 Movie · ${item.release_date?.slice(0, 4) || ''}`;
   document.getElementById('poster-summary').textContent = item.title;
+
+  img.addEventListener('click', () => {
+    window.location.href = `poster.html?id=${item.id}&type=movie`;
+  });
 }
 
 function prevSlide() {
@@ -53,6 +57,7 @@ function nextSlide() {
   showBannerSlide(bannerIndex);
 }
 
+// Swiper Loader
 async function fetchAndDisplay(endpoint, containerSelector, type) {
   try {
     const res = await fetch(`${BASE_URL}${endpoint}?api_key=${API_KEY}`);
@@ -107,6 +112,7 @@ function initSwipers() {
   new Swiper('.tv-swiper', options);
 }
 
+// Search + Genre + Hamburger
 function setupSearchRedirect() {
   const searchBtn = document.getElementById('search-button');
   const searchInput = document.getElementById('search-input');
