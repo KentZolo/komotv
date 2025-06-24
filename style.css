@@ -22,41 +22,81 @@ html, body {
   top: 0;
   z-index: 100;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-.search-bar {
-  display: flex;
-  max-width: 600px;
-  width: 100%;
-}
-
-#search-input {
-  flex: 1;
-  padding: 10px 15px;
+/* ===== HAMBURGER MENU BUTTON ===== */
+.menu-toggle {
+  background: none;
+  color: white;
   border: none;
-  border-radius: 4px 0 0 4px;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+/* ===== SLIDE PANEL MENU ===== */
+.slide-panel {
+  display: none;
+  background-color: #111;
+  border-bottom: 1px solid #333;
+  padding: 15px 20px;
+}
+
+.slide-panel .search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.slide-panel input {
+  flex: 1;
+  padding: 10px;
   font-size: 16px;
-  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  border: none;
+  background-color: white;
   color: black;
 }
 
-#search-button {
-  padding: 10px 20px;
+.slide-panel button {
   background-color: #e50914;
   color: white;
   border: none;
-  border-radius: 0 4px 4px 0;
+  padding: 10px 15px;
+  border-radius: 4px;
   cursor: pointer;
+}
+
+.genre-menu h3 {
   font-size: 16px;
-  transition: background-color 0.3s;
+  margin-bottom: 10px;
 }
 
-#search-button:hover {
-  background-color: #f40612;
+.genre-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-/* ===== BANNER SLIDER ===== */
+.genre-btn {
+  background-color: #222;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.genre-btn:hover {
+  background-color: #e50914;
+  color: white;
+}
+
+/* ===== BANNER ===== */
 .featured {
   width: 100%;
   margin: 0;
@@ -80,7 +120,6 @@ html, body {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: opacity 0.5s ease;
   background: linear-gradient(90deg, #222, #333, #222);
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
@@ -149,18 +188,6 @@ html, body {
   right: 20px;
 }
 
-/* ===== CONTENT SECTIONS ===== */
-section:not(.featured) {
-  padding: 20px;
-  margin-top: 30px;
-}
-
-section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  padding-left: 10px;
-}
-
 /* ===== SWIPER STYLES ===== */
 .swiper {
   padding: 10px 10px 30px !important;
@@ -199,44 +226,6 @@ section h2 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* ===== SEARCH GRID STYLES ===== */
-.search-results-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px;
-  padding: 20px;
-}
-
-.search-title {
-  padding: 20px;
-  text-align: center;
-}
-
-.no-results {
-  text-align: center;
-  padding: 40px;
-  color: #aaa;
-}
-
-.watch-btn {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #e50914;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.poster-wrapper:hover .watch-btn {
-  opacity: 1;
 }
 
 /* ===== MODAL PLAYER ===== */
@@ -308,7 +297,7 @@ section h2 {
   margin-top: 30px;
 }
 
-/* ===== RESPONSIVE ADJUSTMENTS ===== */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .title-text {
     font-size: 1.8rem;
@@ -326,6 +315,10 @@ section h2 {
 
   #player-frame {
     height: 300px;
+  }
+
+  .poster-wrapper img {
+    aspect-ratio: 2/3;
   }
 }
 
