@@ -1,35 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KomoTV - Home</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KomoTV - Streaming Platform</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="navbar">
     <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search movies or shows..." />
+      <input type="text" id="search-input" placeholder="Search movies or shows...">
       <button id="search-button">🔍</button>
     </div>
   </header>
 
-  <!-- Featured Poster -->
+  <!-- Featured Banner -->
   <section class="featured">
     <div class="banner-slider">
       <div class="poster-box" id="active-slide">
         <button class="nav prev">‹</button>
-        <img id="poster-img" src="" alt="Poster" class="poster-image" />
+        <img id="poster-img" src="" alt="Featured" class="poster-image">
         <div class="overlay">
-          <p id="poster-meta" class="meta-text"></p>
-          <h2 id="poster-summary" class="title-text"></h2>
+          <p id="poster-meta" class="meta-text">Loading...</p>
+          <h2 id="poster-summary" class="title-text">KomoTV</h2>
         </div>
         <button class="nav next">›</button>
       </div>
     </div>
   </section>
-  
+
+  <!-- Content Sections -->
   <section class="trending">
     <h2>🔥 Trending Now</h2>
     <div class="swiper trending-swiper">
