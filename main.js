@@ -12,9 +12,6 @@ function getImageUrl(path, isBackdrop = false) {
   return `${IMG_BASE}${path}`;
 }
 
-const searchBtn = document.getElementById('search-button');
-const searchInput = document.getElementById('search-input');
-
 let bannerIndex = 0;
 let bannerItems = [];
 
@@ -107,7 +104,7 @@ function openPlayer(itemId, title, mediaType) {
       <h3>${title}</h3>
       <label>Server:</label>
       <select id="server-select"></select>
-      <div class="iframe-shield">Loading...</div>
+      <div class="iframe-shield">Loading player...</div>
       <iframe id="player-frame" allowfullscreen></iframe>
     </div>
   `;
@@ -141,7 +138,7 @@ function openPlayer(itemId, title, mediaType) {
       if (index + 1 < servers.length) {
         loadServer(index + 1);
       } else {
-        shield.textContent = 'Failed to load video.';
+        shield.textContent = 'No working server found.';
       }
     };
   }
@@ -181,26 +178,95 @@ function initSwipers() {
   new Swiper('.trending-swiper', options);
   new Swiper('.movie-swiper', options);
   new Swiper('.tv-swiper', options);
+  new Swiper('.genre-swiper', options);
 }
 
-if (searchBtn && searchInput) {
-  searchBtn.addEventListener('click', () => {
-    const query = searchInput.value.trim();
-    if (query.length > 1) {
-      window.location.href = `search.html?q=${encodeURIComponent(query)}`;
-    }
-  });
-  searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') searchBtn.click();
-  });
+function setupSearchRedirect() {
+  const searchBtn = document.getElementById('search-button');
+  const searchInput = document.getElementById('search-input');
+
+  if (searchBtn && searchInput) {
+    searchBtn.addEventListener('click', () => {
+      const query = searchInput.value.trim();
+      if (query.length > 1) {
+        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+      }
+    });
+
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchBtn.click();
+    });
+  }
+}
+
+function toggleMenu() {
+  const toggle = document.getElementById('menu-toggle');
+  const panel = document.getElementById('menu-panel');
+
+  if (toggle && panel) {
+    toggle.addEventListener('click', () => {
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    });
+  }
+}
+
+async function loadGenres() {
+  const container = document.getElementById('genre-buttons');
+  if (!container) return;
+
+  try {
+    const res = await fetch(`${BASE_URL}/genre/movie/list?api_key=${API_KEY}`);
+    const data = await res.json();
+    const genres = data.genres;
+
+    container.innerHTML = genres.map(genre => `
+      <button class="genre-btn" data-id="${genre.id}">${genre.name}</button>
+    `).join('');
+
+    container.insertAdjacentHTML('afterbegin', `<button class="genre-btn" data-id="">All</button>`);
+
+    document.querySelectorAll('.genre-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const genreId = btn.dataset.id;
+        loadByGenre(genreId);
+      });
+    });
+
+    loadByGenre('');
+
+  } catch (err) {
+    console.error('Failed to load genres:', err);
+  }
+}
+
+async function loadByGenre(genreId) {
+  const container = document.getElementById('genre-results');
+  if (!container) return;
+
+  container.innerHTML = '<p>Loading...</p>';
+
+  let url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&sort_by=popularity.desc`;
+  if (genreId) url += `&with_genres=${genreId}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    displayMedia(data.results, '#genre-results', 'movie');
+  } catch (err) {
+    console.error('Failed to load by genre:', err);
+    container.innerHTML = '<p>Failed to load genre movies.</p>';
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  toggleMenu();
+  setupSearchRedirect();
   loadBannerSlider();
-  Promise.all([
-    fetchAndDisplay('/trending/all/day', '.movie-list', 'movie'),
-    fetchAndDisplay('/movie/popular', '.popular-list', 'movie'),
-    fetchAndDisplay('/tv/popular', '.tv-list', 'tv')
-  ]).then(initSwipers);
+  loadGenres();
+  fetchAndDisplay('/trending/all/day', '.movie-list', 'movie');
+  fetchAndDisplay('/movie/popular', '.popular-list', 'movie');
+  fetchAndDisplay('/tv/popular', '.tv-list', 'tv');
+  initSwipers();
 });
-      
+            
