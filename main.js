@@ -238,11 +238,6 @@ async function loadGenres() {
   }
 }
 
-  } catch (err) {
-    console.error('Failed to load genres:', err);
-  }
-}
-
 window.addEventListener('DOMContentLoaded', () => {
   toggleMenu();
   setupSearchRedirect();
