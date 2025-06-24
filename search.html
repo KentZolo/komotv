@@ -5,24 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cinebox - Search</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Additional styles specific to search page */
+    .search-title {
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 40px;
+      color: #aaa;
+    }
+    
+    .watch-btn {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #e50914;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .poster-wrapper:hover .watch-btn {
+      opacity: 1;
+    }
+  </style>
 </head>
 <body>
   <header class="navbar">
     <div class="logo">🎬 Cinebox</div>
     <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search movies or shows...">
+      <input type="text" id="search-input" placeholder="Search movies or shows..." value="">
       <button id="search-button">🔍</button>
     </div>
   </header>
 
   <section class="trending">
-    <h2 id="search-title">🔍 Search Results</h2>
+    <h2 id="search-title" class="search-title">🔍 Search Results</h2>
     <div class="movie-list" id="results"></div>
   </section>
 
   <script>
     const API_KEY = '77312bdd4669c80af3d08e0bf719d7ff';
     const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
+    const FALLBACK_IMAGE = 'https://via.placeholder.com/500x750?text=No+Poster';
 
     const SERVERS = [
       {
@@ -42,73 +75,131 @@
       }
     ];
 
+    // Get search query from URL
     function getQuery() {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get('q') || '';
     }
 
+    // Main search function
     async function searchMovies(query) {
-      const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`);
-      const data = await res.json();
-      displayResults(data.results);
+      const container = document.getElementById('results');
+      
+      try {
+        if (!query || query.length < 2) {
+          container.innerHTML = '<p class="no-results">Please enter a valid search term (min 2 characters)</p>';
+          return;
+        }
+
+        container.innerHTML = '<p class="no-results">Searching...</p>';
+        
+        const res = await fetch(
+          `https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&query=${encodeURIComponent(query)}`
+        );
+        
+        if (!res.ok) throw new Error('Search failed');
+        
+        const data = await res.json();
+        displayResults(data.results, query);
+        
+      } catch (error) {
+        console.error('Search error:', error);
+        container.innerHTML = '<p class="no-results">Failed to load results. Please try again.</p>';
+      }
     }
 
-    function displayResults(results) {
+    // Display search results
+    function displayResults(results, query) {
       const container = document.getElementById('results');
-      container.innerHTML = '';
-
+      
       if (!results || results.length === 0) {
-        container.innerHTML = '<p style="text-align:center">No results found.</p>';
+        container.innerHTML = `<p class="no-results">No results found for "${query}"</p>`;
         return;
       }
 
-      results.forEach(item => {
-        if (item.media_type === 'person') return;
+      // Filter out people and items without images
+      const filteredResults = results.filter(item => 
+        item.media_type !== 'person' && 
+        (item.poster_path || item.backdrop_path)
+      );
 
+      if (filteredResults.length === 0) {
+        container.innerHTML = `<p class="no-results">No visual results found for "${query}"</p>`;
+        return;
+      }
+
+      container.innerHTML = filteredResults.map(item => {
         const id = item.id;
         const title = item.title || item.name;
         const type = item.media_type;
-        const poster = item.poster_path ? IMG_BASE + item.poster_path : '';
-
-        const card = document.createElement('div');
-        card.classList.add('poster-wrapper');
-        card.innerHTML = `
-          <img src="${poster}" alt="${title}" />
-          <div class="poster-label">${title}</div>
-          <button class="watch-btn" data-id="${id}" data-title="${title}" data-type="${type}">▶ Watch</button>
+        const year = item.release_date?.slice(0,4) || item.first_air_date?.slice(0,4) || '';
+        const poster = item.poster_path ? IMG_BASE + item.poster_path : FALLBACK_IMAGE;
+        
+        return `
+          <div class="poster-wrapper">
+            <img src="${poster}" alt="${title}" 
+                 onerror="this.src='${FALLBACK_IMAGE}'">
+            <div class="poster-label">${title}</div>
+            <div class="poster-meta">${type === 'movie' ? '🎬' : '📺'} ${year}</div>
+            <button class="watch-btn" 
+                    data-id="${id}" 
+                    data-title="${title}" 
+                    data-type="${type}">
+              ▶ Watch
+            </button>
+          </div>
         `;
-        container.appendChild(card);
+      }).join('');
+
+      // Add click events to all watch buttons
+      document.querySelectorAll('.watch-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openPlayer(
+            btn.dataset.id,
+            btn.dataset.title,
+            btn.dataset.type
+          );
+        });
       });
 
-      document.querySelectorAll('.watch-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = btn.getAttribute('data-id');
-          const title = btn.getAttribute('data-title');
-          const type = btn.getAttribute('data-type');
-          openPlayer(id, title, type);
+      // Make entire poster clickable
+      document.querySelectorAll('.poster-wrapper').forEach(poster => {
+        poster.addEventListener('click', () => {
+          const btn = poster.querySelector('.watch-btn');
+          openPlayer(
+            btn.dataset.id,
+            btn.dataset.title,
+            btn.dataset.type
+          );
         });
       });
     }
 
+    // Player modal function
     function openPlayer(itemId, title, mediaType) {
+      // Create modal
       const modal = document.createElement('div');
-      modal.classList.add('modal');
+      modal.className = 'modal';
+      
+      // Disable scrolling on body
+      document.body.style.overflow = 'hidden';
 
       modal.innerHTML = `
         <div class="modal-content">
           <span class="close-btn">×</span>
-          <label style="color: white;">Change Server:</label>
+          <h3>${title}</h3>
+          <label>Server:</label>
           <select id="server-select"></select>
-          <div class="iframe-shield"></div>
-          <iframe id="player-frame" width="100%" height="500" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>
+          <div class="iframe-shield">Loading player...</div>
+          <iframe id="player-frame" allowfullscreen></iframe>
         </div>
       `;
 
       document.body.appendChild(modal);
 
-      const iframe = modal.querySelector('#player-frame');
+      // Add server options
       const select = modal.querySelector('#server-select');
-
       SERVERS.forEach(server => {
         const option = document.createElement('option');
         option.value = server.id;
@@ -116,37 +207,72 @@
         select.appendChild(option);
       });
 
+      // Load first server by default
+      loadServer(0);
+
       function loadServer(index) {
         const server = SERVERS[index];
         select.value = server.id;
-        const url = server.url(mediaType, itemId);
-        iframe.src = url;
+        const iframe = modal.querySelector('#player-frame');
+        iframe.src = server.url(mediaType, itemId);
 
+        // Show loading shield
         const shield = modal.querySelector('.iframe-shield');
         shield.style.display = 'block';
-        setTimeout(() => shield.remove(), 5000);
+        setTimeout(() => shield.style.display = 'none', 3000);
 
+        // Fallback to next server if error
         iframe.onerror = () => {
-          if (index + 1 < SERVERS.length) loadServer(index + 1);
-          else alert('⚠️ No working server found.');
+          if (index + 1 < SERVERS.length) {
+            loadServer(index + 1);
+          } else {
+            shield.textContent = 'No working server found. Please try again later.';
+          }
         };
       }
 
-      loadServer(0);
-      modal.querySelector('.close-btn').onclick = () => modal.remove();
-      select.onchange = () => {
-        const i = SERVERS.findIndex(s => s.id === select.value);
-        if (i !== -1) loadServer(i);
-      };
+      // Server change handler
+      select.addEventListener('change', () => {
+        const selectedServer = SERVERS.find(s => s.id === select.value);
+        if (selectedServer) {
+          modal.querySelector('#player-frame').src = selectedServer.url(mediaType, itemId);
+        }
+      });
+
+      // Close handlers
+      modal.querySelector('.close-btn').addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      function closeModal() {
+        document.body.style.overflow = '';
+        modal.remove();
+      }
     }
 
-    // INIT
-    const q = getQuery();
-    document.getElementById('search-title').textContent = `🔍 Results for "${q}"`;
-    searchMovies(q);
+    // Initialize search when page loads
+    document.addEventListener('DOMContentLoaded', () => {
+      const query = getQuery();
+      document.getElementById('search-input').value = query;
+      document.getElementById('search-title').textContent = `🔍 Results for "${query}"`;
+      searchMovies(query);
 
-    document.getElementById('search-button').addEventListener('click', () => {
-      const newQuery = document.getElementById('search-input').value.trim();
-      if (newQuery.length > 1) {
-        window.location.href = `search.html?q=${encodeURIComponent(newQuery)}`;
-   
+      // Setup search button
+      document.getElementById('search-button').addEventListener('click', () => {
+        const newQuery = document.getElementById('search-input').value.trim();
+        if (newQuery.length > 1) {
+          window.location.href = `search.html?q=${encodeURIComponent(newQuery)}`;
+        }
+      });
+
+      // Allow search on Enter key
+      document.getElementById('search-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          document.getElementById('search-button').click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
