@@ -23,55 +23,55 @@ const SERVERS = [
 // ----------------------
 // Featured Poster Logic
 // ----------------------
+let bannerIndex = 0;
+let bannerItems = [];
 
-let featuredIndex = 0;
-let featuredItems = [];
-
-async function loadFeaturedPosters() {
-  const res = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`);
-  const data = await res.json();
-  featuredItems = data.results.slice(0, 10); // top 10 now playing
-  showFeatured(featuredIndex);
+async function loadBannerSlider() {
+  const res = await fetch(`${BASE_URL}/movie/now_playing?api_key=${API_KEY}`);
+  const data = await res.json();
+  bannerItems = data.results.slice(0, 10); // top 10 now playing
+  showBannerSlide(bannerIndex);
 }
 
-function showFeatured(index) {
-  const item = featuredItems[index];
-  if (!item) return;
+function showBannerSlide(index) {
+  const item = bannerItems[index];
+  if (!item) return;
 
-  document.getElementById('current-poster').src =
-    IMG_BASE + (item.backdrop_path || item.poster_path);
+  const img = document.getElementById('poster-img');
+  const meta = document.getElementById('poster-meta');
+  const summary = document.getElementById('poster-summary');
 
-  document.getElementById('featured-rating').textContent = `⭐ ${item.vote_average.toFixed(1)}`;
-  document.getElementById('featured-type').textContent = '🎬 Movie';
-  document.getElementById('featured-year').textContent = item.release_date
-    ? item.release_date.slice(0, 4)
-    : '';
+  img.src = IMG_BASE + (item.backdrop_path || item.poster_path);
+  img.setAttribute('data-id', item.id);
+  img.setAttribute('data-title', item.title);
+  img.setAttribute('data-type', 'movie');
 
-  const img = document.getElementById('current-poster');
-  img.setAttribute('data-id', item.id);
-  img.setAttribute('data-title', item.title);
-  img.setAttribute('data-type', 'movie');
+  meta.textContent = `⭐ ${item.vote_average.toFixed(1)} · 🎬 Movie · ${item.release_date?.slice(0, 4) || ''}`;
+  summary.textContent = item.title;
 }
 
-// Handle arrow clicks & poster click
+function prevSlide() {
+  bannerIndex = (bannerIndex - 1 + bannerItems.length) % bannerItems.length;
+  showBannerSlide(bannerIndex);
+}
+
+function nextSlide() {
+  bannerIndex = (bannerIndex + 1) % bannerItems.length;
+  showBannerSlide(bannerIndex);
+}
+
+// Poster click = open player
 document.addEventListener('click', e => {
-  if (e.target.id === 'current-poster') {
-    const id = e.target.getAttribute('data-id');
-    const title = e.target.getAttribute('data-title');
-    const type = e.target.getAttribute('data-type');
-    openPlayer(id, title, type);
-  }
-
-  if (e.target.classList.contains('prev-arrow')) {
-    featuredIndex = (featuredIndex - 1 + featuredItems.length) % featuredItems.length;
-    showFeatured(featuredIndex);
-  }
-
-  if (e.target.classList.contains('next-arrow')) {
-    featuredIndex = (featuredIndex + 1) % featuredItems.length;
-    showFeatured(featuredIndex);
-  }
+  if (e.target.id === 'poster-img') {
+    const id = e.target.getAttribute('data-id');
+    const title = e.target.getAttribute('data-title');
+    const type = e.target.getAttribute('data-type');
+    openPlayer(id, title, type);
+  }
 });
+
+// 🔁 Call this in DOMContentLoaded
+loadBannerSlider();
 
 // ----------------------
 // Fetch and Display Logic
