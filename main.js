@@ -4,12 +4,11 @@ const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
 const FALLBACK_IMAGE = 'https://via.placeholder.com/500x750?text=No+Poster';
 
 function getImageUrl(path, isBackdrop = false) {
-  if (!path) {
-    return isBackdrop
+  return path
+    ? `${IMG_BASE}${path}`
+    : (isBackdrop
       ? 'https://via.placeholder.com/1920x1080?text=No+Banner'
-      : FALLBACK_IMAGE;
-  }
-  return `${IMG_BASE}${path}`;
+      : FALLBACK_IMAGE);
 }
 
 let bannerIndex = 0;
@@ -37,7 +36,6 @@ function showBannerSlide(index) {
   img.src = getImageUrl(item.backdrop_path, true);
   img.alt = item.title;
   img.dataset.id = item.id;
-  img.dataset.title = item.title;
   img.dataset.type = 'movie';
 
   document.getElementById('poster-meta').textContent =
@@ -71,8 +69,7 @@ function displayMedia(items, containerSelector, defaultType) {
 
   container.innerHTML = items.map(item => {
     const title = item.title || item.name;
-    const posterPath = item.poster_path || item.backdrop_path;
-    const imageUrl = getImageUrl(posterPath);
+    const imageUrl = getImageUrl(item.poster_path || item.backdrop_path);
     return `
       <div class="swiper-slide poster-wrapper">
         <img src="${imageUrl}" 
@@ -91,77 +88,7 @@ function displayMedia(items, containerSelector, defaultType) {
       const id = img.dataset.id;
       const type = img.dataset.type;
       window.location.href = `poster.html?id=${id}&type=${type}`;
-  });
-    
-function openPlayer(itemId, title, mediaType) {
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  document.body.style.overflow = 'hidden';
-
-  modal.innerHTML = `
-    <div class="modal-content">
-      <span class="close-btn">×</span>
-      <h3>${title}</h3>
-      <label>Server:</label>
-      <select id="server-select"></select>
-      <div class="iframe-shield">Loading player...</div>
-      <iframe id="player-frame" allowfullscreen></iframe>
-    </div>
-  `;
-  document.body.appendChild(modal);
-
-  const servers = [
-    { id: 'apimocine', name: 'Apimocine', url: (t, id) => `https://apimocine.vercel.app/${t}/${id}?autoplay=true` },
-    { id: 'vidsrc', name: 'Vidsrc.to', url: (t, id) => `https://vidsrc.to/embed/${t}/${id}` },
-    { id: 'vidsrccc', name: 'Vidsrc.cc', url: (t, id) => `https://vidsrc.cc/v2/embed/${t}/${id}` }
-  ];
-
-  const select = modal.querySelector('#server-select');
-  servers.forEach(server => {
-    const option = document.createElement('option');
-    option.value = server.id;
-    option.textContent = server.name;
-    select.appendChild(option);
-  });
-
-  function loadServer(index) {
-    const server = servers[index];
-    select.value = server.id;
-    const iframe = modal.querySelector('#player-frame');
-    iframe.src = server.url(mediaType, itemId);
-
-    const shield = modal.querySelector('.iframe-shield');
-    shield.style.display = 'block';
-    setTimeout(() => shield.style.display = 'none', 3000);
-
-    iframe.onerror = () => {
-      if (index + 1 < servers.length) {
-        loadServer(index + 1);
-      } else {
-        shield.textContent = 'No working server found.';
-      }
-    };
-  }
-
-  loadServer(0);
-
-  select.addEventListener('change', () => {
-    const selected = servers.find(s => s.id === select.value);
-    if (selected) {
-      modal.querySelector('#player-frame').src = selected.url(mediaType, itemId);
-    }
-  });
-
-  modal.querySelector('.close-btn').addEventListener('click', () => {
-    document.body.style.overflow = '';
-    modal.remove();
-  });
-
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      document.body.style.overflow = '';
-      modal.remove();
-    }
+    });
   });
 }
 
@@ -178,7 +105,6 @@ function initSwipers() {
   new Swiper('.trending-swiper', options);
   new Swiper('.movie-swiper', options);
   new Swiper('.tv-swiper', options);
-  new Swiper('.genre-swiper', options);
 }
 
 function setupSearchRedirect() {
@@ -202,7 +128,6 @@ function setupSearchRedirect() {
 function toggleMenu() {
   const toggle = document.getElementById('menu-toggle');
   const panel = document.getElementById('menu-panel');
-
   if (toggle && panel) {
     toggle.addEventListener('click', () => {
       panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
@@ -219,12 +144,10 @@ async function loadGenres() {
     const data = await res.json();
     const genres = data.genres;
 
-    // Generate genre buttons
     container.innerHTML = genres.map(genre => `
       <button class="genre-btn" data-id="${genre.id}">${genre.name}</button>
     `).join('');
 
-    // Add event listeners to buttons
     document.querySelectorAll('.genre-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const genreId = btn.dataset.id;
@@ -241,11 +164,10 @@ async function loadGenres() {
 window.addEventListener('DOMContentLoaded', () => {
   toggleMenu();
   setupSearchRedirect();
-  loadBannerSlider();
   loadGenres();
+  loadBannerSlider();
   fetchAndDisplay('/trending/all/day', '.movie-list', 'movie');
   fetchAndDisplay('/movie/popular', '.popular-list', 'movie');
   fetchAndDisplay('/tv/popular', '.tv-list', 'tv');
   initSwipers();
 });
-            
