@@ -166,6 +166,13 @@ section h2 {
   padding: 10px 10px 30px !important;
 }
 
+.search-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  padding: 20px;
+}
+
 .swiper-slide {
   transition: transform 0.3s ease;
 }
