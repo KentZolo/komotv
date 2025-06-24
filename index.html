@@ -4,33 +4,32 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>KomoTV</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
-  <!-- 🔘 Top Navbar with Hamburger -->
+
+  <!-- Navbar / Hamburger -->
   <header class="navbar">
-    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <button id="menu-toggle" class="menu-toggle">☰</button>
+    <h1 class="logo">KomoTV</h1>
   </header>
 
-  <!-- 📂 Slide Menu -->
-  <aside class="slide-panel" id="menu-panel">
+  <!-- Hidden Menu Panel -->
+  <div class="menu-panel" id="menu-panel">
     <div class="search-bar">
       <input type="text" id="search-input" placeholder="Search movies or shows..." />
       <button id="search-button">🔍</button>
     </div>
-    <div class="genre-menu">
-      <h3>🎯 Filter by Genre</h3>
-      <div class="genre-buttons" id="genre-buttons"></div>
-    </div>
-  </aside>
+    <div id="genre-buttons" class="genre-buttons"></div>
+  </div>
 
-  <!-- 🎞️ Banner -->
+  <!-- Banner Slider -->
   <section class="featured">
     <div class="banner-slider">
       <div class="poster-box" id="active-slide">
         <button class="nav prev">‹</button>
-        <img id="poster-img" src="" alt="Featured" class="poster-image" />
+        <img id="poster-img" src="" alt="Featured" class="poster-image">
         <div class="overlay">
           <p id="poster-meta" class="meta-text">Loading...</p>
           <h2 id="poster-summary" class="title-text">KomoTV</h2>
@@ -40,44 +39,37 @@
     </div>
   </section>
 
-  <!-- 🌀 Genre Result Section -->
-  <section class="genre-section">
-    <h2>📂 Genre Results</h2>
-    <div class="swiper genre-swiper">
-      <div class="swiper-wrapper" id="genre-results"></div>
-    </div>
-  </section>
-
-  <!-- 🔥 Trending -->
-  <section class="trending">
-    <h2>🔥 Trending Now</h2>
+  <!-- Trending Movies -->
+  <section>
+    <h2>🔥 Trending</h2>
     <div class="swiper trending-swiper">
       <div class="swiper-wrapper movie-list"></div>
     </div>
   </section>
 
-  <!-- 🎬 Popular Movies -->
-  <section class="popular">
+  <!-- Popular Movies -->
+  <section>
     <h2>🎬 Popular Movies</h2>
     <div class="swiper movie-swiper">
       <div class="swiper-wrapper popular-list"></div>
     </div>
   </section>
 
-  <!-- 📺 Popular TV -->
-  <section class="tv">
+  <!-- Popular TV Shows -->
+  <section>
     <h2>📺 Popular TV Shows</h2>
     <div class="swiper tv-swiper">
       <div class="swiper-wrapper tv-list"></div>
     </div>
   </section>
 
-  <!-- 📜 Footer -->
+  <!-- Footer -->
   <footer class="footer">
-    <p>&copy; 2025 KomoTV - All rights reserved</p>
+    © 2025 KomoTV. Powered by TMDB.
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+  <!-- JS Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
