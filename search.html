@@ -69,7 +69,7 @@
     }
 
     async function searchMovies(query) {
-      const container = document.getElementById('results');
+      const container = document.getElementById('results-grid');
 
       if (!query || query.length < 2) {
         container.innerHTML = '<p class="no-results">Please enter a valid search term (min 2 characters)</p>';
