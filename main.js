@@ -231,8 +231,8 @@ async function loadGenres() {
         loadByGenre(genreId);
       });
     });
-
-    loadByGenre('');
+    
+    // loadByGenre(''); // Don't auto-load genre results 
 
   } catch (err) {
     console.error('Failed to load genres:', err);
@@ -243,6 +243,9 @@ async function loadByGenre(genreId) {
   const container = document.getElementById('genre-results');
   if (!container) return;
 
+  const section = document.querySelector('.genre-section');
+  if (section) section.classList.add('active');
+  
   container.innerHTML = '<p>Loading...</p>';
 
   let url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&sort_by=popularity.desc`;
