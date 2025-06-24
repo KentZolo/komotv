@@ -2,167 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Genre Results</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genre Results - KomoTV</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="navbar">
     <button onclick="history.back()" class="menu-toggle">←</button>
-    <h2 id="genre-title" style="margin-left: 15px;">🎬 Genre</h2>
+    <h1 class="logo" id="genre-title">Genre</h1>
   </header>
 
-  <section class="search-results">
-    <div class="search-results-grid" id="genre-results"></div>
-  </section>
+  <main>
+    <div class="search-results-grid" id="results-grid"></div>
+    <div id="pagination" class="pagination"></div>
+  </main>
 
   <script>
     const API_KEY = '77312bdd4669c80af3d08e0bf719d7ff';
     const IMG_BASE = 'https://image.tmdb.org/t/p/w500';
     const FALLBACK_IMAGE = 'https://via.placeholder.com/500x750?text=No+Poster';
 
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     const genreId = params.get('id');
     const genreName = params.get('genre');
+    let currentPage = parseInt(params.get('page')) || 1;
 
-    document.title = `${genreName} - KomoTV`;
-    document.getElementById('genre-title').textContent = `🎬 ${genreName} Movies`;
+    function getImageUrl(path) {
+      return path ? IMG_BASE + path : FALLBACK_IMAGE;
+    }
 
-    const SERVERS = [
-      { id: 'apimocine', name: 'Apimocine', url: (t, id) => `https://apimocine.vercel.app/${t}/${id}?autoplay=true` },
-      { id: 'vidsrc', name: 'Vidsrc.to', url: (t, id) => `https://vidsrc.to/embed/${t}/${id}` },
-      { id: 'vidsrccc', name: 'Vidsrc.cc', url: (t, id) => `https://vidsrc.cc/v2/embed/${t}/${id}` }
-    ];
-
-    async function fetchGenreResults(id) {
-      const container = document.getElementById('genre-results');
-      if (!id) {
-        container.innerHTML = '<p class="no-results">Missing genre ID.</p>';
-        return;
-      }
-
-      container.innerHTML = '<p class="no-results">Loading...</p>';
+    async function fetchByGenre(genreId, page = 1) {
+      const container = document.getElementById('results-grid');
+      const pagination = document.getElementById('pagination');
+      const title = document.getElementById('genre-title');
+      title.textContent = `🎬 ${genreName}`;
 
       try {
-        const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&sort_by=popularity.desc&with_genres=${id}`);
+        const res = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&page=${page}`);
         const data = await res.json();
-        showGenreMovies(data.results);
+
+        container.innerHTML = data.results.map(item => {
+          const title = item.title || item.name;
+          const year = (item.release_date || item.first_air_date || '').slice(0, 4);
+          const img = getImageUrl(item.poster_path || item.backdrop_path);
+
+          return `
+            <div class="poster-wrapper">
+              <img src="${img}" alt="${title}" data-id="${item.id}" data-type="movie">
+              <div class="poster-label">${title}</div>
+              <div class="poster-meta">🎬 ${year}</div>
+            </div>
+          `;
+        }).join('');
+
+        document.querySelectorAll('.poster-wrapper img').forEach(img => {
+          img.addEventListener('click', () => {
+            const id = img.dataset.id;
+            const type = img.dataset.type;
+            window.location.href = `poster.html?id=${id}&type=${type}`;
+          });
+        });
+
+        renderPagination(data.total_pages);
       } catch (err) {
-        console.error('Genre fetch error:', err);
-        container.innerHTML = '<p class="no-results">Failed to load genre movies.</p>';
+        container.innerHTML = '<p class="no-results">Failed to load genre results.</p>';
+        console.error(err);
       }
     }
 
-    function showGenreMovies(results) {
-      const container = document.getElementById('genre-results');
+    function renderPagination(totalPages) {
+      const pagination = document.getElementById('pagination');
+      if (totalPages <= 1) return pagination.innerHTML = '';
 
-      if (!results.length) {
-        container.innerHTML = '<p class="no-results">No movies found in this genre.</p>';
-        return;
+      let buttons = '';
+      const maxPage = Math.min(currentPage + 2, totalPages);
+      const minPage = Math.max(1, currentPage - 2);
+
+      if (currentPage > 1) {
+        buttons += `<button onclick="goToPage(${currentPage - 1})">« Prev</button>`;
       }
 
-      container.innerHTML = results.map(item => {
-        const title = item.title;
-        const year = item.release_date?.slice(0, 4) || '';
-        const poster = item.poster_path ? IMG_BASE + item.poster_path : FALLBACK_IMAGE;
+      for (let i = minPage; i <= maxPage; i++) {
+        buttons += `<button onclick="goToPage(${i})" ${i === currentPage ? 'class="active"' : ''}>${i}</button>`;
+      }
 
-        return `
-          <div class="poster-wrapper">
-            <img src="${poster}" alt="${title}">
-            <div class="poster-label">${title}</div>
-            <div class="poster-meta">🎬 ${year}</div>
-            <button class="watch-btn"
-              data-id="${item.id}"
-              data-title="${title}"
-              data-type="movie">▶ Watch</button>
-          </div>
-        `;
-      }).join('');
+      if (currentPage < totalPages) {
+        buttons += `<button onclick="goToPage(${currentPage + 1})">Next »</button>`;
+      }
 
-      document.querySelectorAll('.watch-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openPlayer(btn.dataset.id, btn.dataset.title, btn.dataset.type);
-        });
-      });
-
-      document.querySelectorAll('.poster-wrapper').forEach(poster => {
-        poster.addEventListener('click', () => {
-          const btn = poster.querySelector('.watch-btn');
-          openPlayer(btn.dataset.id, btn.dataset.title, btn.dataset.type);
-        });
-      });
+      pagination.innerHTML = buttons;
     }
 
-    function openPlayer(itemId, title, mediaType) {
-      const modal = document.createElement('div');
-      modal.className = 'modal';
-      document.body.style.overflow = 'hidden';
-
-      modal.innerHTML = `
-        <div class="modal-content">
-          <span class="close-btn">×</span>
-          <h3>${title}</h3>
-          <label>Server:</label>
-          <select id="server-select"></select>
-          <div class="iframe-shield">Loading player...</div>
-          <iframe id="player-frame" allowfullscreen></iframe>
-        </div>
-      `;
-
-      document.body.appendChild(modal);
-
-      const select = modal.querySelector('#server-select');
-      SERVERS.forEach(server => {
-        const option = document.createElement('option');
-        option.value = server.id;
-        option.textContent = server.name;
-        select.appendChild(option);
-      });
-
-      function loadServer(index) {
-        const server = SERVERS[index];
-        select.value = server.id;
-        const iframe = modal.querySelector('#player-frame');
-        iframe.src = server.url(mediaType, itemId);
-
-        const shield = modal.querySelector('.iframe-shield');
-        shield.style.display = 'block';
-        setTimeout(() => shield.style.display = 'none', 3000);
-
-        iframe.onerror = () => {
-          if (index + 1 < SERVERS.length) {
-            loadServer(index + 1);
-          } else {
-            shield.textContent = 'No working server found.';
-          }
-        };
-      }
-
-      loadServer(0);
-
-      select.addEventListener('change', () => {
-        const selected = SERVERS.find(s => s.id === select.value);
-        if (selected) {
-          modal.querySelector('#player-frame').src = selected.url(mediaType, itemId);
-        }
-      });
-
-      modal.querySelector('.close-btn').addEventListener('click', () => {
-        document.body.style.overflow = '';
-        modal.remove();
-      });
-
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          document.body.style.overflow = '';
-          modal.remove();
-        }
-      });
+    function goToPage(page) {
+      location.href = `genre.html?genre=${encodeURIComponent(genreName)}&id=${genreId}&page=${page}`;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      fetchGenreResults(genreId);
+      if (genreId && genreName) {
+        fetchByGenre(genreId, currentPage);
+      } else {
+        document.getElementById('results-grid').innerHTML = '<p class="no-results">Invalid genre ID.</p>';
+      }
     });
   </script>
 </body>
