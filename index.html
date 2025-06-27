@@ -3,28 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>KomoTV</title>
+  <title>GomoTV</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
-
-  <!-- Navbar / Hamburger -->
   <header class="navbar">
-    <button id="menu-toggle" class="menu-toggle">☰</button>
-    <h1 class="logo">KomoTV</h1>
+    <div class="menu-toggle" id="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <h1 class="logo">GomoTV</h1>
+    <button id="theme-toggle" class="theme-toggle">🌓</button>
   </header>
 
-  <!-- Hidden Menu Panel -->
-  <div class="menu-panel" id="menu-panel">
-    <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search movies or shows..." />
-      <button id="search-button">🔍</button>
+  <nav class="hamburger-menu" id="hamburger-menu">
+    <div class="menu-search-bar">
+    <input type="text" id="menu-search-input" placeholder="Search movies or shows...">
+    <button id="menu-search-button">🔍</button>
     </div>
-    <div id="genre-buttons" class="genre-buttons"></div>
-  </div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li id="genre-toggle">
+        <a href="genre.html">Genre</a>
+      </li>
+      <li id="country-toggle">
+        <a href="country.html">Country</a>
+      </li>
+      <li><a href="#">Movies</a></li>
+      <li><a href="#">TV Shows</a></li>
+      <li><a href="#">Top IMDB</a></li>
+    </ul>
+  </nav>
 
-  <!-- Banner Slider -->
   <section class="featured">
     <div class="banner-slider">
       <div class="poster-box" id="active-slide">
@@ -32,43 +44,32 @@
         <img id="poster-img" src="" alt="Featured" class="poster-image">
         <div class="overlay">
           <p id="poster-meta" class="meta-text">Loading...</p>
-          <h2 id="poster-summary" class="title-text">KomoTV</h2>
+          <h2 id="poster-summary" class="title-text">GomoTV</h2>
         </div>
         <button class="nav next">›</button>
       </div>
     </div>
   </section>
 
-  <!-- Trending Movies -->
-  <section>
-    <h2>🔥 Trending</h2>
-    <div class="swiper trending-swiper">
-      <div class="swiper-wrapper movie-list"></div>
-    </div>
+  <section class="media-section">
+    <h2>Trending</h2>
+    <div class="search-results-grid homepage-grid movie-list"></div>
   </section>
 
-  <!-- Popular Movies -->
-  <section>
-    <h2>🎬 Popular Movies</h2>
-    <div class="swiper movie-swiper">
-      <div class="swiper-wrapper popular-list"></div>
-    </div>
+  <section class="media-section">
+    <h2>Popular Movies</h2>
+    <div class="search-results-grid homepage-grid popular-list"></div>
   </section>
 
-  <!-- Popular TV Shows -->
-  <section>
-    <h2>📺 Popular TV Shows</h2>
-    <div class="swiper tv-swiper">
-      <div class="swiper-wrapper tv-list"></div>
-    </div>
+  <section class="media-section">
+    <h2>Popular TV Shows</h2>
+    <div class="search-results-grid homepage-grid tv-list"></div>
   </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    © 2025 KomoTV. Powered by TMDB.
-  </footer>
+  <div id="modal-container"></div>
 
-  <!-- JS Scripts -->
+  <footer class="footer">© 2025 - GomoTV. All content is property of its respective owners.</footer>
+
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="main.js"></script>
 </body>
